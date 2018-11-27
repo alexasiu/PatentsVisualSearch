@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Visualizing Patent Networks</title>
+
+    <!-- stylesheets -->
+    <link href="css/external/bootstrap.min.css" rel="stylesheet">  <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" type="text/css" href="css/style.css" >
+    <link rel="stylesheet" type="text/css" href="css/external/tagify.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker3.min.css">
+</head>
+
+<body>
+
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span><i class="glyphicon glyphicon-search inverse"></i></span>
+      </button>
+      <a class="navbar-brand" href="#">Visualizing Patent Networks</a>
+    </div>
+
+    <div id="navbar" class="navbar-collapse collapse">
+
+      <div class="input-group input-menu"> <!-- Keywords input-->
+          <input name="keywords" class="searchInput" type="search" placeholder="Search Keywords" aria-label="Search Keywords">
+          <span class="input-group-btn">
+            <button class="btn btn-search keywordsRemoveAllBtn" type="button">Remove all keywords</button>
+          </span>
+      </div>
+
+      <div class="input-group input-menu"> <!-- date picker -->
+        <input type="text" class="form-control startDate" placeholder="Start Date (MM/DD/YYY)">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+
+        <span class="input-group-addon dateSpacer"></span>
+
+        <input type="text" class="form-control endDate" placeholder="End Date (MM/DD/YYY)">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+      </div>
+
+      <div class="input-group input-menu"> <!-- Assignee input-->
+          <input name="assignee" class="searchInput" type="search" placeholder="Assignee" aria-label="Assignee">
+          <span class="input-group-btn">
+            <button class="btn btn-search assigneeRemoveAllBtn" type="button">Remove all assignee</button>
+          </span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Bootstrap core JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="js/external/bootstrap.min.js"></script>
+<script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.min.js"></script>
+<!-- End Bootstrap core JavaScript -->
+
+<!-- Tagify JS for keyword search -->
+<script type="text/javascript" src="js/external/tagify.min.js"></script>
+
+<!-- Our JS -->
+<script>
+  $(document).ready( function () {
+    $("[data-toggle='toggle']").click(function() {
+      var selector = $(this).data("target");
+      $(selector).toggleClass('in');
+    });
+
+    $(function(){
+      $('.startDate').datepicker({
+          calendarWeeks: true,
+          todayHighlight: true,
+          autoclose: true
+      });  
+    });
+
+    $(function(){
+      $('.endDate').datepicker({
+          calendarWeeks: true,
+          todayHighlight: true,
+          autoclose: true
+      });  
+    });
+
+  });
+</script>
+
+<!-- Keyword bar -->
+<script> 
+  var input = document.querySelector('input[name=keywords]');
+  // init Tagify script on the "keyword input" box
+  keywordTagify = new Tagify(input, {});
+
+  // "remove all" button event listener
+  document.querySelector('.keywordsRemoveAllBtn')
+          .addEventListener('click', keywordTagify.removeAllTags.bind(keywordTagify))
+
+  // event listeners
+  keywordTagify.on('add', onAddKeyword)
+               .on('remove', onRemoveKeyword)
+               .on('input', onInputKeyword)
+               .on('invalid', onInvalidKeyword)
+
+  // keyword added callback
+  function onAddKeyword(e){
+    console.log(e, e.detail);
+    console.log("original input value: ", input.value)
+    keywordTagify.off('add', onAddKeyword) // exmaple of removing a custom Tagify event
+  }
+  // keyword remvoed callback
+  function onRemoveKeyword(e){
+    console.log(e, e.detail);
+    console.log("tagify instance value:", keywordTagify.value)
+  }
+  // on character(s) added/removed (user is typing/deleting)
+  function onInputKeyword(e){
+    // console.log(e, e.detail);
+  }
+  // invalid tag added callback
+  function onInvalidKeyword(e){
+    console.log(e, e.detail);
+  }
+//**  end keyword bar **//
+</script> 
+
+<!-- Assignee Bar -->
+<script> 
+  var input = document.querySelector('input[name=assignee]');
+  // init Tagify script on the "keyword input" box
+  assigneeTagify = new Tagify(input, {});
+
+  // "remove all" button event listener
+  document.querySelector('.assigneeRemoveAllBtn')
+          .addEventListener('click', assigneeTagify.removeAllTags.bind(assigneeTagify))
+
+  // event listeners
+  assigneeTagify.on('add', onAddAssignee)
+                .on('remove', onRemoveAssignee)
+                .on('invalid', onInvalidAssignee)
+
+  // keyword added callback
+  function onAddAssignee(e){
+    console.log(e, e.detail);
+    console.log("original input value: ", input.value)
+    assigneeTagify.off('add', onAddKeyword) // exmaple of removing a custom Tagify event
+  }
+  // keyword remvoed callback
+  function onRemoveAssignee(e){
+    console.log(e, e.detail);
+    console.log("tagify instance value:", assigneeTagify.value)
+  }
+  // invalid tag added callback
+  function onInvalidAssignee(e){
+    console.log(e, e.detail);
+  }
+//**  end assignee bar **//
+</script> 
+
+
+</body>
+
+
+</html>

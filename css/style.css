@@ -1,0 +1,62 @@
+.input-menu {
+	padding-bottom: 10px;
+	/*padding-top: 5px;*/
+}
+
+.searchInput {
+	color:gray;
+	height:34px;
+	vertical-align: auto;
+}
+
+.tagify.searchInput {
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	background-color: white;
+	padding: none;
+	margin: none;
+	border: none;
+	border-width: none;
+}
+
+.dateSpacer {
+	padding-right: 10px;
+	background-color: rgba(0, 0, 0, 0.0);
+	border: none;
+}
+
+.btn-search {
+	background-color: #DCDCDC;
+}
+
+/* Navbar always collapsed*/
+.navbar-header {
+  float: none;
+}
+.navbar-toggle {
+  display: block;
+}
+.navbar-collapse.collapse {
+  display: none!important;
+}
+.navbar-nav {
+  float: none!important;
+}
+.navbar-nav>li {
+  float: none;
+}
+.navbar-collapse.collapse.in{
+  display:block !important;
+	padding-bottom: 10px;
+	padding-top: 20px;
+}
+
+/* to inverse glyphicon colors to white */
+.inverse, .inverse a {
+  color: #fff;
+}
+
+
+
+
+
