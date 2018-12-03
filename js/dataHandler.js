@@ -42,7 +42,7 @@ function refreshQuery() {
     if (i!=keywords.length-1) { query += " OR "}
   }
   if (addKey) {  
-    if (addIn) { query += " AND "; }
+    if (addIn) { query += " OR "; }
   }
   
   // add inventor query
@@ -52,7 +52,7 @@ function refreshQuery() {
   }
 
   // add assignee query
-  if ( (addKey || addIn) && addAssignee ) { query += " AND "; }
+  if ( (addKey || addIn) && addAssignee ) { query += " OR "; }
   for (i=0; i<assignees.length; i++) {
     query += "Lower([assignee_name]) LIKE '%" + assignees[i] + "%'";
     if (i!=assignees.length-1) { query += " OR "}
@@ -64,16 +64,18 @@ function refreshQuery() {
     'projectId': "patent-search-224318",
     'timeoutMs': '50000',
     'query': query
-      // "SELECT * FROM [patentsearchdata.filtered] \
-      //                  WHERE ( LOWER([title]) LIKE '%" + keywords[0] + "%' OR LOWER([title]) LIKE '%" + keywords[1] + "%' ) \
-      //                  AND LOWER([inventor_name]) LIKE '%" + inventors[0] + "%' \
-      //                  LIMIT 100;"
   });
   request.execute(function(response) {
     console.log(response.rows);
     currSubset = response.rows;
+    console.log(currSubset.length);
+    console.log(currSubset[0]);
   });
 }
+// "SELECT * FROM [patentsearchdata.filtered] \
+//                  WHERE ( LOWER([title]) LIKE '%" + keywords[0] + "%' OR LOWER([title]) LIKE '%" + keywords[1] + "%' ) \
+//                  AND LOWER([inventor_name]) LIKE '%" + inventors[0] + "%' \
+//                  LIMIT 100;"
 
 function addSearchKeyword(keywordIn) {
   keywords.push(keywordIn);

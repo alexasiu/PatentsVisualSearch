@@ -11,12 +11,14 @@
 
     <title>Visualizing Patent Networks</title>
 
-    <!-- stylesheets -->
+    <!-- External stylesheets -->
     <link href="css/external/bootstrap.min.css" rel="stylesheet">  <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" type="text/css" href="css/style.css" >
     <link rel="stylesheet" type="text/css" href="css/external/bootstrap-slider.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/external/tagify.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker3.css">
+    <link rel="stylesheet" type="text/css" href="css/external/bootstrap-datepicker.min.css">
+    <!-- Our stylesheets -->
+    <link rel="stylesheet" type="text/css" href="css/style.css" >
+    <link rel="stylesheet" type="text/css" href="css/dataStyle.css" >
 </head>
 
 <body>
@@ -81,27 +83,36 @@
 
     </div>
   </div>
-</nav>
+</nav> 
+<!-- End navbar -->
+
+<!-- Visualization region -->
+<div class="row col-sm-12 col-xs-12" id="viz_area">
+</div>
+<!-- End visualization region -->
 
 <!-- Bootstrap core JavaScript -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
 <script src="js/external/bootstrap.min.js"></script>
 <script src="js/external/bootstrap-slider.min.js"></script>
-<script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
+<script src="js/external/bootstrap-datepicker.min.js"></script>
 <!-- End Bootstrap core JavaScript -->
 
 <!-- D3 -->
-<script type="text/javascript" src="js/external/d3.min.js"></script>
+<script type="text/javascript" src="https://d3js.org/d3.v3.js"></script>
 
 <!-- Tagify JS for keyword search -->
 <script type="text/javascript" src="js/external/tagify.min.js"></script>
 
 <!-- Google client -->
-<script src="https://apis.google.com/js/client.js"></script>
+<!-- <script src="https://apis.google.com/js/client.js"></script> -->
+<!-- TODO UNCOMMENT -->
 
 <!-- Our JS --> 
-<script src="js/dataHandler.js"></script> <!-- Load and parse data -->
+<script type="text/javascript" src="js/dataHandler.js"></script> <!-- Query and filter data -->
+<script type="text/javascript" src="js/plotData.js"></script> <!-- Plot data as nodes and links -->
+
 <!-- Main -->
 <script>
 
@@ -111,9 +122,10 @@
       $(selector).toggleClass('in');
     });
 
-    // run client library load
+    // run client library load and authentications
     $.getScript("https://apis.google.com/js/client.js", function(d) {
-      onClientLoadHandler();
+      // TODO UNCOMMENT 
+      // onClientLoadHandler();
     });
 
     $(function(){
@@ -151,6 +163,8 @@
     });
 
   });
+
+  plotNodes(0);
 
 </script>
 
