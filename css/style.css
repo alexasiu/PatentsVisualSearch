@@ -29,6 +29,10 @@
 	background-color: #DCDCDC;
 }
 
+.slider-strength p {
+	color: white;
+}
+
 /* Navbar always collapsed*/
 .navbar-header {
   float: none;
@@ -55,8 +59,4 @@
 .inverse, .inverse a {
   color: #fff;
 }
-
-
-
-
 

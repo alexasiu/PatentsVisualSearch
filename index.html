@@ -14,12 +14,12 @@
     <!-- stylesheets -->
     <link href="css/external/bootstrap.min.css" rel="stylesheet">  <!-- Bootstrap core CSS -->
     <link rel="stylesheet" type="text/css" href="css/style.css" >
+    <link rel="stylesheet" type="text/css" href="css/external/bootstrap-slider.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/external/tagify.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker3.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker3.css">
 </head>
 
 <body>
-
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
   <div class="container-fluid">
@@ -33,29 +33,52 @@
 
     <div id="navbar" class="navbar-collapse collapse">
 
-      <div class="input-group input-menu"> <!-- Keywords input-->
+      <!-- Keywords input-->
+      <div class="input-group input-menu"> 
           <input name="keywords" class="searchInput" type="search" placeholder="Search Keywords" aria-label="Search Keywords">
           <span class="input-group-btn">
             <button class="btn btn-search keywordsRemoveAllBtn" type="button">Remove all keywords</button>
           </span>
       </div>
 
-      <div class="input-group input-menu"> <!-- date picker -->
+      <!-- Date picker for start & end-->
+      <div class="input-group input-menu"> 
+        <!-- start date -->
         <input type="text" class="form-control startDate" placeholder="Start Date (MM/DD/YYY)">
         <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 
         <span class="input-group-addon dateSpacer"></span>
 
+        <!-- end date -->
         <input type="text" class="form-control endDate" placeholder="End Date (MM/DD/YYY)">
         <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
       </div>
 
-      <div class="input-group input-menu"> <!-- Assignee input-->
-          <input name="assignee" class="searchInput" type="search" placeholder="Assignee" aria-label="Assignee">
+      <!-- Assignee input-->
+      <div class="input-group input-menu"> 
+          <input name="assignee" class="searchInput" type="search" placeholder="Assignee Name" aria-label="Assignee">
           <span class="input-group-btn">
-            <button class="btn btn-search assigneeRemoveAllBtn" type="button">Remove all assignee</button>
+            <button class="btn btn-search assigneeRemoveAllBtn" type="button">Remove all assignees</button>
           </span>
       </div>
+
+      <!-- Inventor input-->
+      <div class="input-group input-menu"> 
+          <input name="inventor" class="searchInput" type="search" placeholder="Inventor Name" aria-label="Inventor">
+          <span class="input-group-btn">
+            <button class="btn btn-search inventorRemoveAllBtn" type="button">Remove all inventors</button>
+          </span>
+      </div>
+
+      <!-- Slider for keyword strength -->
+      <div class="slider-strength">
+        <p>
+          Keyword Similarity Strength: <b>0</b>
+          <input id="slider-strength">
+          <b>10</b>
+        </p>
+      </div>
+
     </div>
   </div>
 </nav>
@@ -64,44 +87,78 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
 <script src="js/external/bootstrap.min.js"></script>
-<script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.min.js"></script>
+<script src="js/external/bootstrap-slider.min.js"></script>
+<script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
 <!-- End Bootstrap core JavaScript -->
+
+<!-- D3 -->
+<script type="text/javascript" src="js/external/d3.min.js"></script>
 
 <!-- Tagify JS for keyword search -->
 <script type="text/javascript" src="js/external/tagify.min.js"></script>
 
-<!-- Our JS -->
+<!-- Google client -->
+<script src="https://apis.google.com/js/client.js"></script>
+
+<!-- Our JS --> 
+<script src="js/dataHandler.js"></script> <!-- Load and parse data -->
+<!-- Main -->
 <script>
+
   $(document).ready( function () {
     $("[data-toggle='toggle']").click(function() {
       var selector = $(this).data("target");
       $(selector).toggleClass('in');
     });
 
+    // run client library load
+    $.getScript("https://apis.google.com/js/client.js", function(d) {
+      onClientLoadHandler();
+    });
+
     $(function(){
       $('.startDate').datepicker({
           calendarWeeks: true,
           todayHighlight: true,
-          autoclose: true
-      });  
+          autoclose: true,
+          clearBtn: true
+      });
     });
 
     $(function(){
       $('.endDate').datepicker({
           calendarWeeks: true,
           todayHighlight: true,
-          autoclose: true
-      });  
+          autoclose: true,
+          clearBtn: false
+      });
+    });
+
+    $('.startDate').datepicker().on('changeDate', function(e) {
+      console.log(e.date);
+    });
+
+    $('.startDate').datepicker().on('clearDate', function(e) {
+      console.log("no start date");
+    });
+
+    $('.endDate').datepicker().on('changeDate', function(e) {
+      console.log(e.date);
+    });
+
+    $('.endDate').datepicker().on('clearDate', function(e) {
+      console.log("no end date");
     });
 
   });
+
 </script>
 
 <!-- Keyword bar -->
 <script> 
   var input = document.querySelector('input[name=keywords]');
   // init Tagify script on the "keyword input" box
-  keywordTagify = new Tagify(input, {});
+  keywordTagify = new Tagify(input);
 
   // "remove all" button event listener
   document.querySelector('.keywordsRemoveAllBtn')
@@ -115,22 +172,21 @@
 
   // keyword added callback
   function onAddKeyword(e){
-    console.log(e, e.detail);
-    console.log("original input value: ", input.value)
-    keywordTagify.off('add', onAddKeyword) // exmaple of removing a custom Tagify event
+    // console.log("added keyword: ", e.detail.value)
+    addSearchKeyword(e.detail.value.toLowerCase());
+    refreshQuery();
   }
   // keyword remvoed callback
   function onRemoveKeyword(e){
-    console.log(e, e.detail);
-    console.log("tagify instance value:", keywordTagify.value)
+    // console.log("curr keywords:", keywordTagify.value);
+    removeSearchKeyword(keywordTagify.value);
+    refreshQuery();
   }
   // on character(s) added/removed (user is typing/deleting)
   function onInputKeyword(e){
-    // console.log(e, e.detail);
   }
   // invalid tag added callback
   function onInvalidKeyword(e){
-    console.log(e, e.detail);
   }
 //**  end keyword bar **//
 </script> 
@@ -139,7 +195,7 @@
 <script> 
   var input = document.querySelector('input[name=assignee]');
   // init Tagify script on the "keyword input" box
-  assigneeTagify = new Tagify(input, {});
+  assigneeTagify = new Tagify(input);
 
   // "remove all" button event listener
   document.querySelector('.assigneeRemoveAllBtn')
@@ -152,22 +208,71 @@
 
   // keyword added callback
   function onAddAssignee(e){
-    console.log(e, e.detail);
-    console.log("original input value: ", input.value)
-    assigneeTagify.off('add', onAddKeyword) // exmaple of removing a custom Tagify event
+    addAssigneeName(e.detail.value.toLowerCase());
+    // console.log("added assignee: ", e.detail.value)
+    refreshQuery();
   }
   // keyword remvoed callback
   function onRemoveAssignee(e){
-    console.log(e, e.detail);
-    console.log("tagify instance value:", assigneeTagify.value)
+    // console.log("current assignees:", assigneeTagify.value)
+    removeAssigneeName(assigneeTagify.value);
+    refreshQuery();
   }
   // invalid tag added callback
   function onInvalidAssignee(e){
-    console.log(e, e.detail);
+    // console.log(e, e.detail);
   }
 //**  end assignee bar **//
 </script> 
 
+<!-- Inventor Bar -->
+<script> 
+  var input = document.querySelector('input[name=inventor]');
+  // init Tagify script on the "keyword input" box
+  inventorTagify = new Tagify(input);
+
+  // "remove all" button event listener
+  document.querySelector('.inventorRemoveAllBtn')
+          .addEventListener('click', inventorTagify.removeAllTags.bind(inventorTagify))
+
+  // event listeners
+  inventorTagify.on('add', onAddInventor)
+                .on('remove', onRemoveInventor)
+                .on('invalid', onInvalidInventor)
+
+  // keyword added callback
+  function onAddInventor(e){
+    addInventorName(e.detail.value.toLowerCase());
+    // console.log("added inventor:",e.detail.value)
+    refreshQuery();
+  }
+  // keyword remvoed callback
+  function onRemoveInventor(e){
+    // console.log("curr inventors:", inventorTagify.value)
+    removeInventorName(inventorTagify.value);
+    refreshQuery();
+  }
+  // invalid tag added callback
+  function onInvalidInventor(e){
+  }
+//**  end inventor bar **//
+</script> 
+
+<!-- Keyword Slider -->
+<script>
+  var sliderValue=0;
+  var slider = new Slider("#slider-strength", {
+            min: 0,
+            max: 10,
+            step: 1,
+            value: 5
+  });
+  slider.on("change", function(e) {
+    sliderValue = e.newValue;
+    console.log(sliderValue);
+    // document.getElementById("ex6SliderVal").textContent = sliderValue;
+  });
+</script>
 
 </body>
 
