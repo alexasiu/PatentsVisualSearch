@@ -1,5 +1,5 @@
 /* 
- * Functions for handling data 
+ * Functions for querying data with BigQuery API
  *
  */
 var currSubset = null;
@@ -72,6 +72,16 @@ function refreshQuery() {
     // console.log(currSubset.length);
     // console.log(currSubset[0]);
   });
+
+  // TODO
+  // Determine similarity and assign score
+
+  // TODO
+  // Determine number of from the data subset clusters
+
+  // TODO
+  // plot nodes with the data and computed clusters
+  // plotNodes( currSubset );
 }
 // "SELECT * FROM [patentsearchdata.filtered] \
 //                  WHERE ( LOWER([title]) LIKE '%" + keywords[0] + "%' OR LOWER([title]) LIKE '%" + keywords[1] + "%' ) \
@@ -103,6 +113,14 @@ function addAssigneeName(assigneeIn) {
 function removeAssigneeName(remAssignee) {
   assignees = remAssignee;
   console.log(assignees);
+}
+
+function similarityScore () {
+
+}
+
+function returnClusters(n) {
+  
 }
 
 // function searchAssigneeName(assigneeName) {
