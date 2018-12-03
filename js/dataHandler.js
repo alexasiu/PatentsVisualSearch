@@ -27,6 +27,7 @@ function onClientLoadHandler() {
 
 // Compose query to refresh the data
 function refreshQuery() {
+  console.log("refreshing query");
   var i=0;
   var addKey = false; var addIn = false; addAssignee = false;
   if (keywords.length > 0 ) { addKey=true; } 

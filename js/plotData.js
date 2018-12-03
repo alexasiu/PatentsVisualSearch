@@ -1,5 +1,6 @@
 // Plots data as nodes
 // Adapted from example by Mike Bostock: https://bl.ocks.org/mbostock/1748247 
+//       and https://bl.ocks.org/Thanaporn-sk/c7f74cb5051a0cdf6cf077a9db332dfb
 
 var width = 900,
     height = 600,
@@ -12,10 +13,10 @@ var nodes = null; //store current data
 
 function plotNodes(data) {
 
-	var n = 100, // total number of circles (all data) 
 		// TODO replace with data.length
+	var n = 100, // total number of circles (all data) 
+		// TODO replace with top keywords
 	    m = 4;  // number of distinct clusters (top keywords)
-	    // TODO replace with top keywords
 
 	var color = d3.scale.category10()
 	    .domain(d3.range(m));
@@ -37,12 +38,23 @@ function plotNodes(data) {
 	    .attr("width", width)
 	    .attr("height", height);
 
+	var divArea = d3.select("#viz_area").append("div")
+				    .attr("class", "tooltip")
+				    .style("opacity", 0);
+
 	var circle = svg.selectAll("circle")
-	    .data(nodes)
-	  	.enter().append("circle")
-	    .attr("r", function(d) { return d.radius; })
-	    .style("fill", function(d) { return color(d.cluster); })
-	    .call(force.drag);
+				    .data(nodes)
+				  	.enter().append("circle")
+				    .attr("r", function(d) { return d.radius; })
+				    .style("fill", function(d) { return color(d.cluster); })
+				    .call(force.drag)
+					.on("mouseover", mouseover)
+				    .on("mouseout", mouseout)
+					.on("click", function(d) {
+									divArea.transition()
+											.duration(500)
+											.style("opacity", 0);
+					    });
 
 	function tick(e) {
 	  circle
@@ -77,6 +89,39 @@ function plotNodes(data) {
 	    }
 	  };
 	}
+
+	// Handle mouseover on node
+	function mouseover() {
+		// add stroke and tooltip
+		d3.select(this).attr({
+			stroke: "gray",
+			"stroke-width": 5
+        });
+		divArea.transition()
+				.duration(20)
+				.style("opacity", .9);
+				// TODO update with patent data
+		divArea.html("<p>Title: Patent Title</p>" 
+					+"<p>Date: DD-MM-YYY</p>"
+					+"<p>Inventor: Names</p>"
+					+"<p>Assignee: Name </p>"
+					+"<p>Abstract: Abstract</p>"
+				)
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY + 5) + "px");
+	}
+
+	// Handle mouseout from node
+	function mouseout() {
+		// remove stroke and tooltip
+        d3.select(this).attr({
+          "stroke-width": 0
+        });
+		divArea.transition()
+				.duration(500)
+				.style("opacity", 0);
+	}
+
 }
 
 function plotLinks(data) {

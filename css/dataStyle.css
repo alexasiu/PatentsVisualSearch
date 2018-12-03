@@ -24,3 +24,14 @@
   stroke-width: 1.25px;
   cursor: crosshair;
 }
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 200px;
+  height: 120px;
+  padding: 5px;
+  font: 12px sans-serif;
+  background: gray;
+  pointer-events: none;
+}
