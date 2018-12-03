@@ -69,8 +69,8 @@ function refreshQuery() {
   request.execute(function(response) {
     console.log(response.rows);
     currSubset = response.rows;
-    console.log(currSubset.length);
-    console.log(currSubset[0]);
+    // console.log(currSubset.length);
+    // console.log(currSubset[0]);
   });
 }
 // "SELECT * FROM [patentsearchdata.filtered] \
