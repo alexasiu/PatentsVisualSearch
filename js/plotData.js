@@ -1,5 +1,5 @@
 // Plots data as nodes
-// Adapted from example by Mike Bostock: https://bl.ocks.org/mbostock/1748247 
+// Adapted from example by Mike Bostock: https://bl.ocks.org/mbostock/1748247
 //       and https://bl.ocks.org/Thanaporn-sk/c7f74cb5051a0cdf6cf077a9db332dfb
 
 var width = 900,
@@ -14,7 +14,7 @@ var nodes = null; //store current data
 function plotNodes(data) {
 
 		// TODO replace with data.length
-	var n = 100, // total number of circles (all data) 
+	var n = 100, // total number of circles (all data)
 		// TODO replace with top keywords
 	    m = 4;  // number of distinct clusters (top keywords)
 
@@ -22,9 +22,9 @@ function plotNodes(data) {
 	    .domain(d3.range(m));
 
 	// Top keywords form clusters, the largest node and magnet.
-	// TODO replace with top keywords 
+	// TODO replace with top keywords
 	var clusters = new Array(m);
-	nodes = simulateNodes(n, m, clusters); 	// TODO replace with Real data i.e. nodes = data; 
+	nodes = simulateNodes(n, m, clusters); 	// TODO replace with Real data i.e. nodes = data;
 
 	var force = d3.layout.force()
 	    .nodes(nodes)
@@ -92,6 +92,7 @@ function plotNodes(data) {
 
 	// Handle mouseover on node
 	function mouseover() {
+    console.log(this)
 		// add stroke and tooltip
 		d3.select(this).attr({
 			stroke: "gray",
@@ -101,7 +102,7 @@ function plotNodes(data) {
 				.duration(20)
 				.style("opacity", .9);
 				// TODO update with patent data
-		divArea.html("<p>Title: Patent Title</p>" 
+		divArea.html("<p>Title: Patent Title</p>"
 					+"<p>Date: DD-MM-YYY</p>"
 					+"<p>Inventor: Names</p>"
 					+"<p>Assignee: Name </p>"

@@ -120,6 +120,30 @@ function getSimilarityScore(patent1, patent2) {
   return float(intersection.length) / float(union.length)
 }
 
+function loadCitations(patents) {
+  var incitationCount = {} // {patent_id : Int}
+  var citationLinks = {} // {patent_id of citing : patent_id of cited}
+
+  let searchResults = patents.keys()
+
+  patents.forEach(function(patent) {
+      patent.citations.forEach(function(citation) {
+          if (searchResults.contains(citation)) {
+            citationLinks[patent.patent_id] = citation
+            if (incitationCount.keys().contains(citation)) {
+              incitationCount[citation] += 1
+            } else {
+              incitationCount[citation] = 1
+            }
+          }
+      });
+  });
+
+  // TODO: Update node size based on incitationCount
+  // TODO: Draw links using citationLinks
+
+}
+
 function returnClusters(n) {
 
 }
