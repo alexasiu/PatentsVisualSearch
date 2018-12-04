@@ -10,37 +10,46 @@ var width = 900,
     maxRadius = 12;
 
 var nodes = null; //store current data
+var svg = null;
+var force = null;
+var divArea = null;
 
-function plotNodes(data) {
+function plotNodes(dataNodes, clusterNodes) {
 
 		// TODO replace with data.length
-	var n = 100, // total number of circles (all data)
+	var n = dataNodes.length; // total number of circles (all data)
 		// TODO replace with top keywords
-	    m = 4;  // number of distinct clusters (top keywords)
+	var m = 2;  // number of distinct clusters (top keywords)
 
 	var color = d3.scale.category10()
-	    .domain(d3.range(m));
+	    .domain( d3.range(m) );
 
 	// Top keywords form clusters, the largest node and magnet.
 	// TODO replace with top keywords
-	var clusters = new Array(m);
-	nodes = simulateNodes(n, m, clusters); 	// TODO replace with Real data i.e. nodes = data;
+	clusters = clusterNodes; // var clusters = new Array(m);
+	nodes = dataNodes;       // nodes = simulateNodes(n, m, clusters); 	
 
-	var force = d3.layout.force()
-	    .nodes(nodes)
-	    .size([width, height])
-	    .gravity(0)
-	    .charge(0)
-	    .on("tick", tick)
-	    .start();
+	console.log(nodes);
 
-	var svg = d3.select("#viz_area").append("svg")
-	    .attr("width", width)
-	    .attr("height", height);
+	force = d3.layout.force()
+		    .nodes(nodes)
+		    .size([width, height])
+		    .gravity(0)
+		    .charge(0)
+		    .on("tick", tick)
+		    .start();
 
-	var divArea = d3.select("#viz_area").append("div")
-				    .attr("class", "tooltip")
-				    .style("opacity", 0);
+	if (svg == null) {
+		svg = d3.select("#viz_area").append("svg")
+		    .attr("width", width)
+		    .attr("height", height);
+	}
+
+	if (divArea == null) {
+		var divArea = d3.select("#viz_area").append("div")
+					    .attr("class", "tooltip")
+					    .attr("opacity", 0);
+	}
 
 	var circle = svg.selectAll("circle")
 				    .data(nodes)
@@ -48,8 +57,25 @@ function plotNodes(data) {
 				    .attr("r", function(d) { return d.radius; })
 				    .style("fill", function(d) { return color(d.cluster); })
 				    .call(force.drag)
-					.on("mouseover", mouseover)
-				    .on("mouseout", mouseout)
+					.on("mouseover", function(d) {
+						d3.select(this).attr({
+							stroke: "gray",
+							"stroke-width": 5
+				        });
+						divArea.transition()
+								.duration(20)
+								.style("opacity", .9);
+								// TODO update with patent data
+						divArea.html("<p>Title:" + d.title + "</p>"
+									+"<p>Date:" + d.date + "</p>"
+									+"<p>Inventor:" + d.inventors + "</p>" 
+									+"<p>Assignee:" + d.assignee + "</p>"
+									+"<p>Abstract:" + d.abstract + "</p>"
+								)
+								.style("left", (d3.event.pageX) + "px")
+								.style("top", (d3.event.pageY + 5) + "px");
+					})
+				    .on( "mouseout", mouseout )
 					.on("click", function(d) {
 									divArea.transition()
 											.duration(500)
@@ -90,28 +116,6 @@ function plotNodes(data) {
 	  };
 	}
 
-	// Handle mouseover on node
-	function mouseover() {
-    console.log(this)
-		// add stroke and tooltip
-		d3.select(this).attr({
-			stroke: "gray",
-			"stroke-width": 5
-        });
-		divArea.transition()
-				.duration(20)
-				.style("opacity", .9);
-				// TODO update with patent data
-		divArea.html("<p>Title: Patent Title</p>"
-					+"<p>Date: DD-MM-YYY</p>"
-					+"<p>Inventor: Names</p>"
-					+"<p>Assignee: Name </p>"
-					+"<p>Abstract: Abstract</p>"
-				)
-				.style("left", (d3.event.pageX) + "px")
-				.style("top", (d3.event.pageY + 5) + "px");
-	}
-
 	// Handle mouseout from node
 	function mouseout() {
 		// remove stroke and tooltip
@@ -125,6 +129,7 @@ function plotNodes(data) {
 
 }
 
+// TODO
 function plotLinks(data) {
 }
 

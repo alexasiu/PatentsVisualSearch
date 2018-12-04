@@ -2,7 +2,7 @@
  * Functions for querying data with BigQuery API
  *
  */
-var currSubset = null;
+var currSubset = [];
 var keywords = [];
 var startDate = null;
 var endDate = null;
@@ -28,6 +28,7 @@ function onClientLoadHandler() {
 // Compose query to refresh the data
 function refreshQuery() {
   console.log("refreshing query");
+  currSubset = []
   var i=0;
   var addKey = false; var addIn = false; addAssignee = false;
   if (keywords.length > 0 ) { addKey=true; }
@@ -66,24 +67,40 @@ function refreshQuery() {
     'timeoutMs': '50000',
     'query': query
   });
-  request.execute(function(response) {
-    console.log(response.rows);
-    currSubset = response.rows;
-    // console.log(currSubset.length);
-    // console.log(currSubset[0]);
+  request.execute(
+    function(response) {
+      response.rows.forEach(
+        function(d) {
+          currSubset.push({
+              "id": parseInt(d.f[0].v),
+              "title": d.f[1].v,
+              "date": d.f[2].v,
+              "abstract": d.f[3].v,
+              "assignee": d.f[4].v,
+              "inventors": d.f[5].v,
+              "citations": d.f[6].v,
+              "keywords": d.f[7].v,
+              "cluster": Math.floor(Math.random() * 2), // TODO change based on keywords  // num should match cluster number
+              "radius": 10,                             // TODO set radius based on similarity
+              x: Math.random(),
+              y: Math.random(),
+              px: Math.random(),
+              py: Math.random()
+            });
+        });
+
+      // Assign clusters // TODO 
+      var clusterNodes = [ currSubset[0], currSubset[1]  ];
+
+      if (clusterNodes.length > 0) {
+        // TODO
+        // plot nodes with the data and computed clusters
+        plotNodes( currSubset, clusterNodes );
+      }
+
   });
 
-  // TODO
-  // Determine number of from the data subset clusters
-
-  // TODO
-  // plot nodes with the data and computed clusters
-  // plotNodes( currSubset );
 }
-// "SELECT * FROM [patentsearchdata.filtered] \
-//                  WHERE ( LOWER([title]) LIKE '%" + keywords[0] + "%' OR LOWER([title]) LIKE '%" + keywords[1] + "%' ) \
-//                  AND LOWER([inventor_name]) LIKE '%" + inventors[0] + "%' \
-//                  LIMIT 100;"
 
 function addSearchKeyword(keywordIn) {
   keywords.push(keywordIn);
@@ -144,7 +161,7 @@ function loadCitations(patents) {
 
 }
 
-function returnClusters(n) {
+function returnCluster(n) {
 
 }
 
