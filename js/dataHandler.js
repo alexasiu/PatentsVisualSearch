@@ -1,4 +1,4 @@
-/* 
+/*
  * Functions for querying data with BigQuery API
  *
  */
@@ -9,11 +9,11 @@ var endDate = null;
 var assignees = [];
 var inventors = [];
 
-// Authentication Method 
+// Authentication Method
 function onClientLoadHandler() {
   // authenticate to BigQuery, it asks for your Google credential to perform oauth
   var config = {
-    'client_id': '1001245404093-qma4s3nbj518ndajlekiin7501mh1o62.apps.googleusercontent.com', 
+    'client_id': '1001245404093-qma4s3nbj518ndajlekiin7501mh1o62.apps.googleusercontent.com',
     'scope': 'https://www.googleapis.com/auth/bigquery'
   };
   setTimeout(function() {
@@ -30,7 +30,7 @@ function refreshQuery() {
   console.log("refreshing query");
   var i=0;
   var addKey = false; var addIn = false; addAssignee = false;
-  if (keywords.length > 0 ) { addKey=true; } 
+  if (keywords.length > 0 ) { addKey=true; }
   if (assignees.length>0) { addAssignee =true; }
   if(inventors.length>0){ addIn = true; }
 
@@ -42,10 +42,10 @@ function refreshQuery() {
     query += "Lower([title]) LIKE '%" + keywords[i] + "%'";
     if (i!=keywords.length-1) { query += " OR "}
   }
-  if (addKey) {  
+  if (addKey) {
     if (addIn) { query += " OR "; }
   }
-  
+
   // add inventor query
   for (i=0; i<inventors.length; i++) {
     query += "Lower([inventor_name]) LIKE '%" + inventors[i] + "%'";
@@ -72,9 +72,6 @@ function refreshQuery() {
     // console.log(currSubset.length);
     // console.log(currSubset[0]);
   });
-
-  // TODO
-  // Determine similarity and assign score
 
   // TODO
   // Determine number of from the data subset clusters
@@ -115,12 +112,16 @@ function removeAssigneeName(remAssignee) {
   console.log(assignees);
 }
 
-function similarityScore () {
-
+function getSimilarityScore(patent1, patent2) {
+  let p1words = patent1.title + patent1.abstract
+  let p2words = patent2.title + patent2.abstract
+  let intersection = p1words.filter(word => p2words.includes(word));
+  let union = [new Set([p1words, p2words)];
+  return float(intersection.length) / float(union.length)
 }
 
 function returnClusters(n) {
-  
+
 }
 
 // function searchAssigneeName(assigneeName) {
