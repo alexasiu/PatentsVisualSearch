@@ -34,29 +34,29 @@ function refreshQuery() {
   if (assignees.length>0) { addAssignee =true; }
   if(inventors.length>0){ addIn = true; }
 
-  var query = "SELECT * FROM [patentsearchdata.filtered] ";
+  var query = "SELECT * FROM [patentsearchdata.filteredFull] ";
 
   // add keyword query
   for (i=0; i<keywords.length; i++) {
     if (i==0) { query += "WHERE "; }
-    query += "Lower([title]) LIKE '%" + keywords[i] + "%'";
-    if (i!=keywords.length-1) { query += " OR "}
+    query += "Lower([keywords]) LIKE '%" + keywords[i] + "%'";
+    if (i!=keywords.length-1) { query += " AND "}
   }
   if (addKey) {
-    if (addIn) { query += " OR "; }
+    if (addIn) { query += " AND "; }
   }
 
   // add inventor query
   for (i=0; i<inventors.length; i++) {
     query += "Lower([inventor_name]) LIKE '%" + inventors[i] + "%'";
-    if (i!=inventors.length-1) { query += " OR "}
+    if (i!=inventors.length-1) { query += " AND "}
   }
 
   // add assignee query
-  if ( (addKey || addIn) && addAssignee ) { query += " OR "; }
+  if ( (addKey || addIn) && addAssignee ) { query += " AND "; }
   for (i=0; i<assignees.length; i++) {
     query += "Lower([assignee_name]) LIKE '%" + assignees[i] + "%'";
-    if (i!=assignees.length-1) { query += " OR "}
+    if (i!=assignees.length-1) { query += " AND "}
   }
 
   query += " LIMIT 100;"
