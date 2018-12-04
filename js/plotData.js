@@ -65,12 +65,11 @@ function plotNodes(dataNodes, clusterNodes) {
 						divArea.transition()
 								.duration(20)
 								.style("opacity", .9);
-								// TODO update with patent data
-						divArea.html("<p>Title:" + d.title + "</p>"
-									+"<p>Date:" + d.date + "</p>"
-									+"<p>Inventor:" + d.inventors + "</p>" 
-									+"<p>Assignee:" + d.assignee + "</p>"
-									+"<p>Abstract:" + d.abstract + "</p>"
+						divArea.html("<p style='line-height: 1.0;'><b>" + d.title + "</b></p>" 
+									+"<p style='line-height: 0.9;'>Date: " + d.date + "</p>"
+									+"<p style='line-height: 0.9;'>Inventor: " + d.inventors +"</p>"
+									+"<p style='line-height: 0.9;'>Assignee: " + d.assignee + "</p>"
+									// +"<p>Abstract:" + d.abstract + "</p>"
 								)
 								.style("left", (d3.event.pageX) + "px")
 								.style("top", (d3.event.pageY + 5) + "px");
