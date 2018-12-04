@@ -116,7 +116,7 @@ function getSimilarityScore(patent1, patent2) {
   let p1words = patent1.title + patent1.abstract
   let p2words = patent2.title + patent2.abstract
   let intersection = p1words.filter(word => p2words.includes(word));
-  let union = [new Set([p1words, p2words)];
+  let union = [new Set([p1words, p2words])];
   return float(intersection.length) / float(union.length)
 }
 
