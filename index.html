@@ -81,6 +81,11 @@
         </p>
       </div>
 
+      <!-- Button to Refresh Viz -->
+      <div class="input-group input-menu">
+          <button class="btn btn-search refreshVizBtn" type="button" style="background-color: DeepSkyBlue">Refresh Visualization</button>
+      </div>
+
     </div>
   </div>
 </nav>
@@ -186,13 +191,11 @@
   function onAddKeyword(e){
     // console.log("added keyword: ", e.detail.value)
     addSearchKeyword(e.detail.value.toLowerCase());
-    refreshQuery();
   }
   // keyword remvoed callback
   function onRemoveKeyword(e){
     // console.log("curr keywords:", keywordTagify.value);
     removeSearchKeyword(keywordTagify.value);
-    refreshQuery();
   }
   // on character(s) added/removed (user is typing/deleting)
   function onInputKeyword(e){
@@ -222,13 +225,11 @@
   function onAddAssignee(e){
     addAssigneeName(e.detail.value.toLowerCase());
     // console.log("added assignee: ", e.detail.value)
-    refreshQuery();
   }
   // keyword remvoed callback
   function onRemoveAssignee(e){
     // console.log("current assignees:", assigneeTagify.value)
     removeAssigneeName(assigneeTagify.value);
-    refreshQuery();
   }
   // invalid tag added callback
   function onInvalidAssignee(e){
@@ -256,13 +257,11 @@
   function onAddInventor(e){
     addInventorName(e.detail.value.toLowerCase());
     // console.log("added inventor:",e.detail.value)
-    refreshQuery();
   }
   // keyword remvoed callback
   function onRemoveInventor(e){
     // console.log("curr inventors:", inventorTagify.value)
     removeInventorName(inventorTagify.value);
-    refreshQuery();
   }
   // invalid tag added callback
   function onInvalidInventor(e){
@@ -281,12 +280,37 @@
   });
   slider.on("change", function(e) {
     sliderValue = e.newValue;
+
     console.log(sliderValue);
     // document.getElementById("ex6SliderVal").textContent = sliderValue;
   });
 </script>
 
+<!-- Refresh Button-->
+<script>
+
+  // "remove all" button event listener
+  document.querySelector('.refreshVizBtn')
+          .addEventListener('click', onRefreshVisualization);
+
+  // keyword added callback
+  function onRefreshVisualization(e){
+    console.log("refresh");
+    refreshQuery();
+  }
+
+//**  end inventor bar **//
+</script>
+
+
 </body>
 
 
 </html>
+
+
+
+
+
+
+

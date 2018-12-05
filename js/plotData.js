@@ -10,11 +10,13 @@ var width = 900,
     maxRadius = 12;
 
 var nodes = null; //store current data
+var citationLinks = null;
 var svg = null;
+var circle = null;
 var force = null;
 var divArea = null;
 
-function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
+function plotNodesAndLinks(dataNodes, clusterNodes, links) {
 
 		// TODO replace with data.length
 	var n = dataNodes.length; // total number of circles (all data)
@@ -24,10 +26,18 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 	var color = d3.scale.category10()
 	    .domain( d3.range(m) );
 
+	// Reset the force layout
+	if (nodes != null) {
+		circle = {};
+		nodes = {};
+		citationLinks = {};
+		svg.selectAll('circle').remove();
+	}
+
 	// Top keywords form clusters, the largest node and magnet.
-	// TODO replace with top keywords
 	clusters = clusterNodes; // var clusters = new Array(m);
 	nodes = dataNodes;       // nodes = simulateNodes(n, m, clusters);
+	citationLinks = links;
 
   if (citationLinks == undefined) {return};
 
@@ -59,11 +69,11 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 
 	if (divArea == null) {
 		var divArea = d3.select("#viz_area").append("div")
-					    .attr("class", "tooltip")
+					    .attr("class", "tooltipNode")
 					    .attr("opacity", 0);
 	}
 
-	var circle = svg.selectAll("circle")
+	circle = svg.selectAll("circle")
 				    .data(nodes)
 				  	.enter().append("circle")
 				    .attr("r", function(d) { return d.radius; })
@@ -215,4 +225,18 @@ function simulateNodes ( n, m, clusters ) {
 	  return d;
 	});
 	return nodesTemp;
+}
+
+function clearNodes() {
+    nodes = {};
+    links = [];
+    force.start();
+    d3.timer(force.resume);
+}
+
+function codeChange() {
+    selectedCode = this.value;
+    cloneData = clone(allData);
+    clearNodes();
+    updateNodes();
 }
