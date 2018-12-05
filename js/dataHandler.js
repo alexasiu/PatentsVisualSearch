@@ -67,12 +67,17 @@ function refreshQuery() {
     'timeoutMs': '50000',
     'query': query
   });
+
+  incitationCount = {}
+  citationLinks = {}
+
   request.execute(
     function(response) {
+      incitationCount, citationLinks = loadCitations(response.rows); // TODO: check response.rows = patents
       response.rows.forEach(
         function(d) {
           currSubset.push({
-              "id": parseInt(d.f[0].v),
+              "id": d.f[0].v,
               "title": d.f[1].v,
               "date": d.f[2].v,
               "abstract": d.f[3].v,
@@ -81,21 +86,24 @@ function refreshQuery() {
               "citations": d.f[6].v,
               "keywords": d.f[7].v,
               "cluster": Math.floor(Math.random() * 2), // TODO change based on keywords  // num should match cluster number
-              "radius": 10,                             // TODO set radius based on similarity
+              "radius": incitationCount[d.f[0].v],                             // TODO set radius based on incitationCount
               x: Math.random(),
               y: Math.random(),
               px: Math.random(),
-              py: Math.random()
+              py: Math.random(),
+              opacity: turnDateIntoOpacity(d.f[2].v)
             });
         });
 
-      // Assign clusters // TODO 
+      // Assign clusters // TODO
       var clusterNodes = [ currSubset[0], currSubset[1]  ];
 
       if (clusterNodes.length > 0) {
         // TODO
         // plot nodes with the data and computed clusters
-        plotNodes( currSubset, clusterNodes );
+        console.log(incitationCount)
+        console.log(citationLinks)
+        plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
       }
 
   });
@@ -126,7 +134,12 @@ function addAssigneeName(assigneeIn) {
 
 function removeAssigneeName(remAssignee) {
   assignees = remAssignee;
-  console.log(assignees);
+}
+
+function turnDateIntoOpacity(date_data) {
+  let patentYear = (new Date(date_data)).getFullYear();
+  let currentYear = new Date().getFullYear();
+  return (20 - Math.min(currentYear-patentYear, 20)) / (20)
 }
 
 function getSimilarityScore(patent1, patent2) {
@@ -138,27 +151,34 @@ function getSimilarityScore(patent1, patent2) {
 }
 
 function loadCitations(patents) {
-  var incitationCount = {} // {patent_id : Int}
-  var citationLinks = {} // {patent_id of citing : patent_id of cited}
 
-  let searchResults = patents.keys()
+  var incitationCount = {}; // {patent_id : Int}
+  var citationLinks = {}; // {source: patent_id of citing, target: patent_id of cited}
+
+  let searchResults = new Set();
+
+  patents.forEach(function(d) {
+    searchResults.add(d.f[0].v);
+  });
 
   patents.forEach(function(patent) {
-      patent.citations.forEach(function(citation) {
-          if (searchResults.contains(citation)) {
-            citationLinks[patent.patent_id] = citation
-            if (incitationCount.keys().contains(citation)) {
-              incitationCount[citation] += 1
-            } else {
-              incitationCount[citation] = 1
-            }
+    citations = patent.f[6].v.split(", ");
+    citations.forEach(function(citation) {
+        if (searchResults.has(citation)) {
+          citationLinks["source"] = patent.f[0].v
+          citationLinks["target"] = citation
+          if (Object.keys(incitationCount).has(citation)) {
+            incitationCount[citation] += 1
+          } else {
+            incitationCount[citation] = 1
           }
-      });
+        }
+    });
   });
 
   // TODO: Update node size based on incitationCount
   // TODO: Draw links using citationLinks
-
+  return incitationCount, citationLinks
 }
 
 function returnCluster(n) {

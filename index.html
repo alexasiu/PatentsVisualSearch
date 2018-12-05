@@ -36,7 +36,7 @@
     <div id="navbar" class="navbar-collapse collapse">
 
       <!-- Keywords input-->
-      <div class="input-group input-menu"> 
+      <div class="input-group input-menu">
           <input name="keywords" class="searchInput" type="search" placeholder="Search Keywords" aria-label="Search Keywords">
           <span class="input-group-btn">
             <button class="btn btn-search keywordsRemoveAllBtn" type="button">Remove all keywords</button>
@@ -44,7 +44,7 @@
       </div>
 
       <!-- Date picker for start & end-->
-      <div class="input-group input-menu"> 
+      <div class="input-group input-menu">
         <!-- start date -->
         <input type="text" class="form-control startDate" placeholder="Start Date (MM/DD/YYY)">
         <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
@@ -57,7 +57,7 @@
       </div>
 
       <!-- Assignee input-->
-      <div class="input-group input-menu"> 
+      <div class="input-group input-menu">
           <input name="assignee" class="searchInput" type="search" placeholder="Assignee Name" aria-label="Assignee">
           <span class="input-group-btn">
             <button class="btn btn-search assigneeRemoveAllBtn" type="button">Remove all assignees</button>
@@ -65,7 +65,7 @@
       </div>
 
       <!-- Inventor input-->
-      <div class="input-group input-menu"> 
+      <div class="input-group input-menu">
           <input name="inventor" class="searchInput" type="search" placeholder="Inventor Name" aria-label="Inventor">
           <span class="input-group-btn">
             <button class="btn btn-search inventorRemoveAllBtn" type="button">Remove all inventors</button>
@@ -83,7 +83,7 @@
 
     </div>
   </div>
-</nav> 
+</nav>
 <!-- End navbar -->
 
 <!-- Visualization region -->
@@ -109,7 +109,7 @@
 <script src="https://apis.google.com/js/client.js"></script>
 <!-- TODO UNCOMMENT when deploying -->
 
-<!-- Our JS --> 
+<!-- Our JS -->
 <script type="text/javascript" src="js/dataHandler.js"></script> <!-- Query and filter data -->
 <script type="text/javascript" src="js/plotData.js"></script> <!-- Plot data as nodes and links -->
 
@@ -164,12 +164,12 @@
 
   });
 
-  plotNodes(0);
+  plotNodesAndLinks(0);
 
 </script>
 
 <!-- Keyword bar -->
-<script> 
+<script>
   var input = document.querySelector('input[name=keywords]');
   // init Tagify script on the "keyword input" box
   keywordTagify = new Tagify(input);
@@ -203,10 +203,10 @@
   function onInvalidKeyword(e){
   }
 //**  end keyword bar **//
-</script> 
+</script>
 
 <!-- Assignee Bar -->
-<script> 
+<script>
   var input = document.querySelector('input[name=assignee]');
   // init Tagify script on the "keyword input" box
   assigneeTagify = new Tagify(input);
@@ -237,10 +237,10 @@
     // console.log(e, e.detail);
   }
 //**  end assignee bar **//
-</script> 
+</script>
 
 <!-- Inventor Bar -->
-<script> 
+<script>
   var input = document.querySelector('input[name=inventor]');
   // init Tagify script on the "keyword input" box
   inventorTagify = new Tagify(input);
@@ -270,7 +270,7 @@
   function onInvalidInventor(e){
   }
 //**  end inventor bar **//
-</script> 
+</script>
 
 <!-- Keyword Slider -->
 <script>

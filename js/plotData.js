@@ -14,7 +14,7 @@ var svg = null;
 var force = null;
 var divArea = null;
 
-function plotNodes(dataNodes, clusterNodes) {
+function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 
 		// TODO replace with data.length
 	var n = dataNodes.length; // total number of circles (all data)
@@ -27,7 +27,7 @@ function plotNodes(dataNodes, clusterNodes) {
 	// Top keywords form clusters, the largest node and magnet.
 	// TODO replace with top keywords
 	clusters = clusterNodes; // var clusters = new Array(m);
-	nodes = dataNodes;       // nodes = simulateNodes(n, m, clusters); 	
+	nodes = dataNodes;       // nodes = simulateNodes(n, m, clusters);
 
 	console.log(nodes);
 
@@ -65,7 +65,7 @@ function plotNodes(dataNodes, clusterNodes) {
 						divArea.transition()
 								.duration(20)
 								.style("opacity", .9);
-						divArea.html("<p style='line-height: 1.0;'><b>" + d.title + "</b></p>" 
+						divArea.html("<p style='line-height: 1.0;'><b>" + d.title + "</b></p>"
 									+"<p style='line-height: 0.9;'>Date: " + d.date + "</p>"
 									+"<p style='line-height: 0.9;'>Inventor: " + d.inventors +"</p>"
 									+"<p style='line-height: 0.9;'>Assignee: " + d.assignee + "</p>"
@@ -80,6 +80,13 @@ function plotNodes(dataNodes, clusterNodes) {
 											.duration(500)
 											.style("opacity", 0);
 					    });
+  var link = svg.append("g")
+      .attr("class", "links")
+    .selectAll("line")
+    .data(citationLinks)
+    .enter().append("line")
+      .attr("stroke-width", 2)
+      .style("stroke", "gray");
 
 	function tick(e) {
 	  circle
@@ -87,6 +94,11 @@ function plotNodes(dataNodes, clusterNodes) {
 	      .each(collide(.5))
 	      .attr("cx", function(d) { return d.x; })
 	      .attr("cy", function(d) { return d.y; });
+    link
+        .attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
 	}
 
 	// Move d to be adjacent to the cluster node.
@@ -126,10 +138,6 @@ function plotNodes(dataNodes, clusterNodes) {
 				.style("opacity", 0);
 	}
 
-}
-
-// TODO
-function plotLinks(data) {
 }
 
 // Resolves collisions between d and all other circles.
