@@ -53,8 +53,8 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 
 	if (svg == null) {
 		svg = d3.select("#viz_area").append("svg")
-		    .attr("width", width)
-		    .attr("height", height);
+		    .attr("width", window.innerWidth)
+		    .attr("height", window.innerHeight);
 	}
 
 	if (divArea == null) {
@@ -131,6 +131,9 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
+    svg
+		    .attr("width", window.innerWidth)
+		    .attr("height", window.innerHeight);
 	}
 
 	// Move d to be adjacent to the cluster node.
