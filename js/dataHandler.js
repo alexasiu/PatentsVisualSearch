@@ -71,11 +71,14 @@ function refreshQuery() {
   incitationCount = {}
   citationLinks = {}
 
+  var m = 6;
+
   request.execute(
     function(response) {
       citations = loadCitations(response.rows); // TODO: check response.rows = patents
       incitationCount = citations[0];
       citationLinks = citations[1];
+
       for (i = 0; i < response.rows.length; i++) {
         d = response.rows[i];
         currSubset.push({
@@ -87,23 +90,21 @@ function refreshQuery() {
             "inventors": d.f[5].v,
             "citations": d.f[6].v,
             "keywords": d.f[7].v,
-            "cluster": Math.floor(Math.random() * 2), // TODO change based on keywords  // num should match cluster number
-            "radius": 10,                             // TODO set radius based on incitationCount
-            "radius": getRadius(incitationCount, d.f[0].v),                             // TODO set radius based on incitationCount
+            "cluster": Math.floor(Math.random() * m), 
+            "radius": getRadius(incitationCount, d.f[0].v), // TODO set radius based on incitationCount
             x: Math.random(),
             y: Math.random(),
             px: Math.random(),
             py: Math.random(),
             opacity: turnDateIntoOpacity(d.f[2].v)
           });
-
-          //TODO: assign clusters
-          var clusterNodes = [ currSubset[0], currSubset[1] ];
-
-          if (clusterNodes.length > 0 && i == response.rows.length-1) {
-            plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
-          }
       }
+
+      var clusterNodes = assignClusters(m);
+      //var clusterNodes = [currSubset[0],currSubset[1],currSubset[2],currSubset[3]]
+      console.log(clusterNodes.length);
+      plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
+      // plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
 
   });
 
@@ -182,31 +183,123 @@ function loadCitations(patents) {
         }
     });
   }
-
-  // TODO: Update node size based on incitationCount
-  // TODO: Draw links using citationLinks
   return [incitationCount, citationLinks];
 }
 
-function returnCluster(n) {
+function assignClusters(m) {
+
+  var clusterNodes = [];
+  var key_freq = [];
+  var val_freq = [];
+  var kw_array = [];
+
+  // collect and sort the keywords
+  for (var i = 0; i < currSubset.length ; i++) {
+    if (currSubset[i].keywords.indexOf(',') > -1) {
+      // if there are multiple keywords
+      var kws = currSubset[i].keywords.split(",");
+      for (var j=0; j<kws.length; j++ ) {
+        getSingleCluster( key_freq, val_freq, kw_array, kws[j] );  
+      }
+    } else {
+      // if there's only one
+      getSingleCluster(key_freq, val_freq, kw_array, currSubset[i].keywords);
+    }
+  }
+
+  var sort_dic = [];
+  for (var i = 0; i < key_freq.length; i ++) {
+    sort_dic[i] = [key_freq[i], val_freq[i]];
+  }
+
+  // Sort the array based on the second element
+  sort_dic.sort(function(first, second) {
+    return second[1] - first[1];
+  });
+  // get top m
+  sort_dic_top = sort_dic.slice(0,m-1);
+
+  console.log(sort_dic_top);
+  console.log(key_freq);
+  console.log(val_freq);
+  console.log(kw_array);
+
+  for (var i = 0; i < currSubset.length ; i++) {
+    if (currSubset[i].keywords.indexOf(',') > -1) {
+      // if there are multiple keywords
+      var kws = currSubset[i].keywords.split(",");
+      var clusterNum = getSingleCluster( key_freq, val_freq, kw_array, kws[0] );
+
+      currSubset[i].cluster = itemIn2DArray(clusterNum, sort_dic_top);
+
+      for (var j=1; j<kws.length; j++ ) {
+        var clusterNum = getSingleCluster( key_freq, val_freq, kw_array, kws[j] );
+        if ( itemIn2DArray(clusterNum, sort_dic_top) > 1 ) {
+          currSubset[i].cluster = itemIn2DArray(clusterNum, sort_dic_top);
+          break;
+        } else if ( j == kws.length-1 ) {
+          currSubset[i].cluster = 0;
+        } 
+      }
+
+    } else {
+      // if there's only one
+      var clusterNum = getSingleCluster(key_freq, val_freq, currSubset[i].keywords);
+      currSubset[i].cluster = itemIn2DArray(clusterNum, sort_dic_top);
+    }
+
+    clusterNodes[ currSubset[i].cluster ] = currSubset[i];
+
+  }
+
+  console.log(clusterNodes);
+
+  return clusterNodes;
 
 }
 
-// function searchAssigneeName(assigneeName) {
-//   if (currSubset == null) {
-//     var request = gapi.client.bigquery.jobs.query({
-//       'projectId': "patent-search-224318",
-//       'timeoutMs': '50000',
-//       'query': "SELECT * FROM [patentsearchdata.filtered] \
-//                          WHERE [assignee_name] \
-//                          LIKE '%" + assigneeName + "%' \
-//                          LIMIT 100;"
-//     });
-//     request.execute(function(response) {
-//       console.log(response.rows);
-//       currSubset = response.rows;
-//     });
-//   } else {
+function itemIn2DArray(item, array) {
+  for (var i = 0; i < array.length; i++) {
+    if (array[i][0] == item) {
+      return i+1;
+    }
+  }
+  return 0;
+}
 
-//   }
-// }
+function getSingleCluster( key_freq, val_freq, kw_array, nodeKeyword ) {
+
+  var clusterNum = 0;
+  var kw_arr_idx = kw_array.indexOf(nodeKeyword);
+
+  if (kw_arr_idx > -1) {
+    clusterNum = kw_arr_idx+2;
+    val_freq[key_freq.indexOf(clusterNum)] += 1;
+  } else {
+    kw_array.push(nodeKeyword);
+    clusterNum = kw_array.length+2;
+    key_freq.push(clusterNum);
+    val_freq.push(1);
+  }
+  return clusterNum;
+}
+
+function copyNode(node) {
+  return ({ "id": node.id,
+            "title": node.title,
+            "date": node.date,
+            "abstract": node.abstract,
+            "assignee": node.assignee,
+            "inventors": node.inventors,
+            "citations": node.citations,
+            "keywords": node.keywords,
+            "cluster": node.cluster,
+            "radius": node.radius,      
+            x: node.x,
+            y: node.y,
+            px: node.px,
+            py: node.py,
+            opacity: node.opacity
+          });
+}
+

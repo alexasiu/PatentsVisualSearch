@@ -19,7 +19,7 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 		// TODO replace with data.length
 	var n = dataNodes.length; // total number of circles (all data)
 		// TODO replace with top keywords
-	var m = 2;  // number of distinct clusters (top keywords)
+	var m = clusterNodes.length;  // number of distinct clusters (top keywords)
 
 	var color = d3.scale.category10()
 	    .domain( d3.range(m) );
@@ -44,7 +44,7 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 
 	force = d3.layout.force()
 		    .nodes(nodes)
-        .links(citationLinks)
+        	.links(citationLinks)
 		    .size([width, height])
 		    .gravity(0)
 		    .charge(-5)
@@ -141,6 +141,9 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 	  return function(d) {
 	    var cluster = clusters[d.cluster],
 	        k = 1;
+
+	    // console.log(cluster);
+	    // console.log(cluster.x);
 
 	    // For cluster nodes, apply custom gravity.
 	    if (cluster === d) {
