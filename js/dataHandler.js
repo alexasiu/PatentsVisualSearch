@@ -89,6 +89,7 @@ function refreshQuery() {
             "citations": d.f[6].v,
             "keywords": d.f[7].v,
             "cluster": Math.floor(Math.random() * 2), // TODO change based on keywords  // num should match cluster number
+            "radius": 10,                             // TODO set radius based on incitationCount
             "radius": getRadius(incitationCount, d.f[0].v),                             // TODO set radius based on incitationCount
             x: Math.random(),
             y: Math.random(),
@@ -111,7 +112,7 @@ function refreshQuery() {
 
 function getRadius(incitationCount, patent_id) {
   scaleFactor = 1;
-  if (incitationCount[patent_id] == undefined) {
+  if (incitationCount[patent_id] != undefined) {
     scaleFactor += incitationCount[patent_id];
   }
   return 10 * scaleFactor;
@@ -146,7 +147,8 @@ function removeAssigneeName(remAssignee) {
 function turnDateIntoOpacity(date_data) {
   let patentYear = (new Date(date_data)).getFullYear();
   let currentYear = new Date().getFullYear();
-  return (20 - Math.min(currentYear-patentYear, 20)) / (20)
+  console.log(Math.min((20 - Math.min(currentYear-patentYear, 20)) / (40) + 0.5, 1.0));
+  return Math.min((20 - Math.min(currentYear-patentYear, 20)) / (40) + 0.5, 1.0);
 }
 
 function getSimilarityScore(patent1, patent2) {

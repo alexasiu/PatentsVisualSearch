@@ -60,7 +60,8 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 				  	.enter().append("circle")
 				    .attr("r", function(d) { return d.radius; })
 				    .style("fill", function(d) { return color(d.cluster); })
-				    .call(force.drag)
+            .style("opacity", function(d) { return d.opacity; })
+            .call(force.drag)
 					.on("mouseover", function(d) {
 						d3.select(this).attr({
 							stroke: "gray",
@@ -92,7 +93,7 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
   //     .style("stroke", "gray");
 
 	function tick(e) {
-    console.log(circle);
+    // console.log(circle);
     // console.log(link);
 	  circle
 	      .each(cluster(10 * e.alpha * e.alpha))
