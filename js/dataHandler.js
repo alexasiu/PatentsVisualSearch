@@ -86,7 +86,7 @@ function refreshQuery() {
               "citations": d.f[6].v,
               "keywords": d.f[7].v,
               "cluster": Math.floor(Math.random() * 2), // TODO change based on keywords  // num should match cluster number
-              "radius": incitationCount[d.f[0].v],                             // TODO set radius based on incitationCount
+              "radius": incitationCount[d.f[0].v],      // TODO set radius based on incitationCount
               x: Math.random(),
               y: Math.random(),
               px: Math.random(),

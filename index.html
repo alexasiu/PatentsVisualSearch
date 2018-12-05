@@ -75,7 +75,7 @@
       <!-- Slider for keyword strength -->
       <div class="slider-strength">
         <p>
-          Keyword Similarity Strength: <b>0</b>
+          Number of Keyword Clusters: <b>1</b>
           <input id="slider-strength">
           <b>10</b>
         </p>
@@ -274,7 +274,7 @@
 <script>
   var sliderValue=0;
   var slider = new Slider("#slider-strength", {
-            min: 0,
+            min: 1,
             max: 10,
             step: 1,
             value: 5
