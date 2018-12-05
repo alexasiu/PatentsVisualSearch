@@ -73,41 +73,48 @@ function refreshQuery() {
 
   request.execute(
     function(response) {
-      incitationCount, citationLinks = loadCitations(response.rows); // TODO: check response.rows = patents
-      response.rows.forEach(
-        function(d) {
-          currSubset.push({
-              "id": d.f[0].v,
-              "title": d.f[1].v,
-              "date": d.f[2].v,
-              "abstract": d.f[3].v,
-              "assignee": d.f[4].v,
-              "inventors": d.f[5].v,
-              "citations": d.f[6].v,
-              "keywords": d.f[7].v,
-              "cluster": Math.floor(Math.random() * 2), // TODO change based on keywords  // num should match cluster number
-              "radius": incitationCount[d.f[0].v],                             // TODO set radius based on incitationCount
-              x: Math.random(),
-              y: Math.random(),
-              px: Math.random(),
-              py: Math.random(),
-              opacity: turnDateIntoOpacity(d.f[2].v)
-            });
-        });
+      citations = loadCitations(response.rows); // TODO: check response.rows = patents
+      console.log(citations);
+      incitationCount = citations[0];
+      citationLinks = citations[1];
+      for (i = 0; i < response.rows.length; i++) {
+        d = response.rows[i];
+        currSubset.push({
+            "id": d.f[0].v,
+            "title": d.f[1].v,
+            "date": d.f[2].v,
+            "abstract": d.f[3].v,
+            "assignee": d.f[4].v,
+            "inventors": d.f[5].v,
+            "citations": d.f[6].v,
+            "keywords": d.f[7].v,
+            "cluster": Math.floor(Math.random() * 2), // TODO change based on keywords  // num should match cluster number
+            "radius": getRadius(incitationCount, d.f[0].v),                             // TODO set radius based on incitationCount
+            x: Math.random(),
+            y: Math.random(),
+            px: Math.random(),
+            py: Math.random(),
+            opacity: turnDateIntoOpacity(d.f[2].v)
+          });
 
-      // Assign clusters // TODO
-      var clusterNodes = [ currSubset[0], currSubset[1]  ];
+          //TODO: assign clusters
+          var clusterNodes = [ currSubset[0], currSubset[1] ];
 
-      if (clusterNodes.length > 0) {
-        // TODO
-        // plot nodes with the data and computed clusters
-        console.log(incitationCount)
-        console.log(citationLinks)
-        plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
+          if (clusterNodes.length > 0 && i == response.rows.length-1) {
+            plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
+          }
       }
 
   });
 
+}
+
+function getRadius(incitationCount, patent_id) {
+  scaleFactor = 1;
+  if (incitationCount[patent_id] == undefined) {
+    scaleFactor += incitationCount[patent_id];
+  }
+  return 10 * scaleFactor;
 }
 
 function addSearchKeyword(keywordIn) {
@@ -157,28 +164,29 @@ function loadCitations(patents) {
 
   let searchResults = new Set();
 
-  patents.forEach(function(d) {
-    searchResults.add(d.f[0].v);
-  });
+  for (i = 0; i < patents.length; i++) {
+    searchResults.add(patents[i].f[0].v);
+  }
 
-  patents.forEach(function(patent) {
+  for (i = 0; i < patents.length; i++) {
+    patent = patents[i];
     citations = patent.f[6].v.split(", ");
     citations.forEach(function(citation) {
         if (searchResults.has(citation)) {
-          citationLinks["source"] = patent.f[0].v
-          citationLinks["target"] = citation
-          if (Object.keys(incitationCount).has(citation)) {
+          citationLinks["source"] = patent.f[0].v;
+          citationLinks["target"] = citation;
+          if (Object.keys(incitationCount).includes(citation)) {
             incitationCount[citation] += 1
           } else {
             incitationCount[citation] = 1
           }
         }
     });
-  });
+  }
 
   // TODO: Update node size based on incitationCount
   // TODO: Draw links using citationLinks
-  return incitationCount, citationLinks
+  return [incitationCount, citationLinks];
 }
 
 function returnCluster(n) {

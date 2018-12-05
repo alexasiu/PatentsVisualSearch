@@ -29,10 +29,14 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 	clusters = clusterNodes; // var clusters = new Array(m);
 	nodes = dataNodes;       // nodes = simulateNodes(n, m, clusters);
 
+  console.log("plotNodesAndLinks is called.")
 	console.log(nodes);
+  console.log(citationLinks);
+  if (citationLinks == undefined) {return};
 
 	force = d3.layout.force()
 		    .nodes(nodes)
+        // .links(citationLinks)
 		    .size([width, height])
 		    .gravity(0)
 		    .charge(0)
@@ -80,25 +84,26 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 											.duration(500)
 											.style("opacity", 0);
 					    });
-  var link = svg.append("g")
-      .attr("class", "links")
-    .selectAll("line")
-    .data(citationLinks)
-    .enter().append("line")
-      .attr("stroke-width", 2)
-      .style("stroke", "gray");
+
+  // var link = svg.selectAll("line")
+  //   .data(citationLinks)
+  //   .enter().append("line")
+  //     .attr("stroke-width", 2)
+  //     .style("stroke", "gray");
 
 	function tick(e) {
+    console.log(circle);
+    // console.log(link);
 	  circle
 	      .each(cluster(10 * e.alpha * e.alpha))
 	      .each(collide(.5))
 	      .attr("cx", function(d) { return d.x; })
 	      .attr("cy", function(d) { return d.y; });
-    link
-        .attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
+    // link
+    //     .attr("x1", function(d) { return d.source.x; })
+    //     .attr("y1", function(d) { return d.source.y; })
+    //     .attr("x2", function(d) { return d.target.x; })
+    //     .attr("y2", function(d) { return d.target.y; });
 	}
 
 	// Move d to be adjacent to the cluster node.
