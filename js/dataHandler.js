@@ -8,6 +8,7 @@ var startDate = null;
 var endDate = null;
 var assignees = [];
 var inventors = [];
+var clusterM = 5;
 
 // Authentication Method
 function onClientLoadHandler() {
@@ -71,8 +72,6 @@ function refreshQuery() {
   incitationCount = {}
   citationLinks = {}
 
-  var m = 6;
-
   request.execute(
     function(response) {
       citations = loadCitations(response.rows); // TODO: check response.rows = patents
@@ -90,7 +89,7 @@ function refreshQuery() {
             "inventors": d.f[5].v,
             "citations": d.f[6].v,
             "keywords": d.f[7].v,
-            "cluster": Math.floor(Math.random() * m), 
+            "cluster": Math.floor(Math.random() * clusterM), 
             "radius": getRadius(incitationCount, d.f[0].v), // TODO set radius based on incitationCount
             x: Math.random(),
             y: Math.random(),
@@ -100,7 +99,7 @@ function refreshQuery() {
           });
       }
 
-      var clusterNodes = assignClusters(m);
+      var clusterNodes = assignClusters(clusterM);
       //var clusterNodes = [currSubset[0],currSubset[1],currSubset[2],currSubset[3]]
       console.log(clusterNodes.length);
       plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
@@ -156,6 +155,10 @@ function getSimilarityScore(patent1, patent2) {
   let intersection = p1words.filter(word => p2words.includes(word));
   let union = [new Set([p1words, p2words])];
   return float(intersection.length) / float(union.length)
+}
+
+function updateCluserNumber(slider) {
+  clusterM = slider;
 }
 
 function loadCitations(patents) {
