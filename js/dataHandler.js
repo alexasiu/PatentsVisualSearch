@@ -74,7 +74,6 @@ function refreshQuery() {
   request.execute(
     function(response) {
       citations = loadCitations(response.rows); // TODO: check response.rows = patents
-      console.log(citations);
       incitationCount = citations[0];
       citationLinks = citations[1];
       for (i = 0; i < response.rows.length; i++) {
@@ -147,7 +146,6 @@ function removeAssigneeName(remAssignee) {
 function turnDateIntoOpacity(date_data) {
   let patentYear = (new Date(date_data)).getFullYear();
   let currentYear = new Date().getFullYear();
-  console.log(Math.min((20 - Math.min(currentYear-patentYear, 20)) / (40) + 0.5, 1.0));
   return Math.min((20 - Math.min(currentYear-patentYear, 20)) / (40) + 0.5, 1.0);
 }
 
@@ -162,7 +160,7 @@ function getSimilarityScore(patent1, patent2) {
 function loadCitations(patents) {
 
   var incitationCount = {}; // {patent_id : Int}
-  var citationLinks = {}; // {source: patent_id of citing, target: patent_id of cited}
+  var citationLinks = []; // {source: patent_id of citing, target: patent_id of cited}
 
   let searchResults = new Set();
 
@@ -175,8 +173,7 @@ function loadCitations(patents) {
     citations = patent.f[6].v.split(", ");
     citations.forEach(function(citation) {
         if (searchResults.has(citation)) {
-          citationLinks["source"] = patent.f[0].v;
-          citationLinks["target"] = citation;
+          citationLinks.push({"source": patent.f[0].v, "target": citation});
           if (Object.keys(incitationCount).includes(citation)) {
             incitationCount[citation] += 1
           } else {

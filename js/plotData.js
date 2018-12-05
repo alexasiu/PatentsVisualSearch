@@ -29,17 +29,25 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 	clusters = clusterNodes; // var clusters = new Array(m);
 	nodes = dataNodes;       // nodes = simulateNodes(n, m, clusters);
 
-  console.log("plotNodesAndLinks is called.")
-	console.log(nodes);
-  console.log(citationLinks);
   if (citationLinks == undefined) {return};
+
+  var nodeById = d3.map();
+
+  nodes.forEach(function(node) {
+    nodeById.set(node.id, node);
+  });
+
+  citationLinks.forEach(function(link) {
+    link.source = nodeById.get(link.source);
+    link.target = nodeById.get(link.target);
+  });
 
 	force = d3.layout.force()
 		    .nodes(nodes)
-        // .links(citationLinks)
+        .links(citationLinks)
 		    .size([width, height])
 		    .gravity(0)
-		    .charge(0)
+		    .charge(-5)
 		    .on("tick", tick)
 		    .start();
 
@@ -59,6 +67,8 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 				    .data(nodes)
 				  	.enter().append("circle")
 				    .attr("r", function(d) { return d.radius; })
+            .attr("cx", function(d) { return d.x; })
+    	      .attr("cy", function(d) { return d.y; })
 				    .style("fill", function(d) { return color(d.cluster); })
             .style("opacity", function(d) { return d.opacity; })
             .call(force.drag)
@@ -74,7 +84,7 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 									+"<p style='line-height: 0.9;'>Date: " + d.date + "</p>"
 									+"<p style='line-height: 0.9;'>Inventor: " + d.inventors +"</p>"
 									+"<p style='line-height: 0.9;'>Assignee: " + d.assignee + "</p>"
-									// +"<p>Abstract:" + d.abstract + "</p>"
+									+"<p>Abstract:" + d.abstract + "</p>"
 								)
 								.style("left", (d3.event.pageX) + "px")
 								.style("top", (d3.event.pageY + 5) + "px");
@@ -86,25 +96,41 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 											.style("opacity", 0);
 					    });
 
-  // var link = svg.selectAll("line")
-  //   .data(citationLinks)
-  //   .enter().append("line")
-  //     .attr("stroke-width", 2)
-  //     .style("stroke", "gray");
+  svg.append("svg:defs").selectAll("marker")
+        .data(["end"])      // Different link/path types can be defined here
+      .enter().append("svg:marker")    // This section adds in the arrows
+        .attr("id", String)
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 2)
+        .attr("refY", -0)
+        .attr("markerWidth", 2)
+        .attr("markerHeight", 2)
+        .attr("orient", "auto")
+        .style("fill", "gray")
+        .style("stroke", "gray")
+      .append("svg:path")
+        .attr("d", "M0,-5L10,0L0,5")
+        .style("fill", "gray")
+        .style("stroke", "gray");
+
+  var link = svg.selectAll("line")
+    .data(citationLinks)
+    .enter().append("line")
+      .attr("stroke-width", 5)
+      .attr("marker-end", "url(#end)")
+      .style("stroke", "gray");
 
 	function tick(e) {
-    // console.log(circle);
-    // console.log(link);
 	  circle
 	      .each(cluster(10 * e.alpha * e.alpha))
 	      .each(collide(.5))
 	      .attr("cx", function(d) { return d.x; })
 	      .attr("cy", function(d) { return d.y; });
-    // link
-    //     .attr("x1", function(d) { return d.source.x; })
-    //     .attr("y1", function(d) { return d.source.y; })
-    //     .attr("x2", function(d) { return d.target.x; })
-    //     .attr("y2", function(d) { return d.target.y; });
+    link
+        .attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
 	}
 
 	// Move d to be adjacent to the cluster node.
