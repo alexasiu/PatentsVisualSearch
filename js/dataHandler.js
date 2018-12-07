@@ -101,7 +101,6 @@ function refreshQuery() {
       var clusterNodes = assignClusters(clusterM);
       //var clusterNodes = [currSubset[0],currSubset[1],currSubset[2],currSubset[3]]
       plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
-      // plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
 
   });
 
@@ -235,7 +234,6 @@ function assignClusters(m) {
           currSubset[i].cluster = 0;
         }
       }
-
     } else {
       // if there's only one
       var clusterNum = getSingleCluster(key_freq, val_freq, currSubset[i].keywords);
