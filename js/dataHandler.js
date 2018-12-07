@@ -28,7 +28,6 @@ function onClientLoadHandler() {
 
 // Compose query to refresh the data
 function refreshQuery() {
-  console.log("refreshing query");
   currSubset = []
   var i=0;
   var addKey = false; var addIn = false; addAssignee = false;
@@ -61,7 +60,7 @@ function refreshQuery() {
     if (i!=assignees.length-1) { query += " AND "}
   }
 
-  query += " LIMIT 100;"
+  query += " LIMIT 500;"
 
   var request = gapi.client.bigquery.jobs.query({
     'projectId': "patent-search-224318",
@@ -89,7 +88,7 @@ function refreshQuery() {
             "inventors": d.f[5].v,
             "citations": d.f[6].v,
             "keywords": d.f[7].v,
-            "cluster": Math.floor(Math.random() * clusterM), 
+            "cluster": Math.floor(Math.random() * clusterM),
             "radius": getRadius(incitationCount, d.f[0].v), // TODO set radius based on incitationCount
             x: Math.random(),
             y: Math.random(),
@@ -101,7 +100,6 @@ function refreshQuery() {
 
       var clusterNodes = assignClusters(clusterM);
       //var clusterNodes = [currSubset[0],currSubset[1],currSubset[2],currSubset[3]]
-      console.log(clusterNodes.length);
       plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
       // plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
 
@@ -123,7 +121,6 @@ function addSearchKeyword(keywordIn) {
 
 function removeSearchKeyword(remKeys) {
   keywords = remKeys;
-  console.log(keywords);
 }
 
 function addInventorName(inventorIn) {
@@ -132,7 +129,6 @@ function addInventorName(inventorIn) {
 
 function removeInventorName(remInventors) {
   inventors = remInventors;
-  console.log(inventors);
 }
 
 function addAssigneeName(assigneeIn) {
@@ -202,7 +198,7 @@ function assignClusters(m) {
       // if there are multiple keywords
       var kws = currSubset[i].keywords.split(",");
       for (var j=0; j<kws.length; j++ ) {
-        getSingleCluster( key_freq, val_freq, kw_array, kws[j] );  
+        getSingleCluster( key_freq, val_freq, kw_array, kws[j] );
       }
     } else {
       // if there's only one
@@ -222,11 +218,6 @@ function assignClusters(m) {
   // get top m
   sort_dic_top = sort_dic.slice(0,m-1);
 
-  console.log(sort_dic_top);
-  console.log(key_freq);
-  console.log(val_freq);
-  console.log(kw_array);
-
   for (var i = 0; i < currSubset.length ; i++) {
     if (currSubset[i].keywords.indexOf(',') > -1) {
       // if there are multiple keywords
@@ -242,7 +233,7 @@ function assignClusters(m) {
           break;
         } else if ( j == kws.length-1 ) {
           currSubset[i].cluster = 0;
-        } 
+        }
       }
 
     } else {
@@ -254,8 +245,6 @@ function assignClusters(m) {
     clusterNodes[ currSubset[i].cluster ] = currSubset[i];
 
   }
-
-  console.log(clusterNodes);
 
   return clusterNodes;
 
@@ -297,7 +286,7 @@ function copyNode(node) {
             "citations": node.citations,
             "keywords": node.keywords,
             "cluster": node.cluster,
-            "radius": node.radius,      
+            "radius": node.radius,
             x: node.x,
             y: node.y,
             px: node.px,
@@ -305,4 +294,3 @@ function copyNode(node) {
             opacity: node.opacity
           });
 }
-

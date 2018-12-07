@@ -2,8 +2,8 @@
 // Adapted from example by Mike Bostock: https://bl.ocks.org/mbostock/1748247
 //       and https://bl.ocks.org/Thanaporn-sk/c7f74cb5051a0cdf6cf077a9db332dfb
 
-var width = 900,
-    height = 600,
+var width = window.innerWidth,
+    height = window.innerHeight,
     padding = 3,         // separation between same-color circles
     clusterPadding = 30, // separation between different-color circles
     minRadius = 4,
@@ -52,12 +52,14 @@ function plotNodesAndLinks(dataNodes, clusterNodes, links) {
     link.target = nodeById.get(link.target);
   });
 
-	force = d3.layout.force()
+	force = d3.layout
+        .force()
+        // .strength(-100)
 		    .nodes(nodes)
-        	.links(citationLinks)
+      	.links(citationLinks)
 		    .size([width, height])
 		    .gravity(0)
-		    .charge(-5)
+		    // .charge(5)
 		    .on("tick", tick)
 		    .start();
 
@@ -131,11 +133,15 @@ function plotNodesAndLinks(dataNodes, clusterNodes, links) {
       .style("stroke", "gray");
 
 	function tick(e) {
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
 	  circle
 	      .each(cluster(10 * e.alpha * e.alpha))
-	      .each(collide(.5))
-	      .attr("cx", function(d) { return d.x; })
-	      .attr("cy", function(d) { return d.y; });
+	      // .each(collide(.5))
+        .attr("cx", function(d) { return d.x = Math.max(d.radius, Math.min(width - d.radius, d.x)); })
+        .attr("cy", function(d) { return d.y = Math.max(60 + d.radius, Math.min(height - d.radius, d.y)); });
+	      // .attr("cx", function(d) { return d.x; })
+	      // .attr("cy", function(d) { return d.y; });
     link
         .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
