@@ -103,7 +103,6 @@ function refreshQuery() {
       //var clusterNodes = [currSubset[0],currSubset[1],currSubset[2],currSubset[3]]
       console.log(clusterNodes.length);
       plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
-      // plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
 
   });
 
@@ -242,9 +241,8 @@ function assignClusters(m) {
           break;
         } else if ( j == kws.length-1 ) {
           currSubset[i].cluster = 0;
-        } 
+        }
       }
-
     } else {
       // if there's only one
       var clusterNum = getSingleCluster(key_freq, val_freq, currSubset[i].keywords);
