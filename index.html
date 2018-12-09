@@ -282,6 +282,7 @@
     sliderValue = e.newValue;
 
     console.log(sliderValue);
+    updateClusterNumber(sliderValue);
     // document.getElementById("ex6SliderVal").textContent = sliderValue;
   });
 </script>
@@ -292,6 +293,8 @@
   // "remove all" button event listener
   document.querySelector('.refreshVizBtn')
           .addEventListener('click', onRefreshVisualization);
+  document.querySelector('.refreshVizBtn')
+          .disabled = true;
 
   // keyword added callback
   function onRefreshVisualization(e){
@@ -307,10 +310,3 @@
 
 
 </html>
-
-
-
-
-
-
-

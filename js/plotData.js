@@ -5,7 +5,7 @@
 var width = window.innerWidth,
     height = window.innerHeight,
     padding = 3,         // separation between same-color circles
-    clusterPadding = 30, // separation between different-color circles
+    clusterPadding = 12, // separation between different-color circles
     minRadius = 4,
     maxRadius = 12;
 
@@ -15,6 +15,11 @@ var svg = null;
 var circle = null;
 var force = null;
 var divArea = null;
+
+function linkDistance(d) {
+  console.log(d);
+  return d.distance;
+}
 
 function plotNodesAndLinks(dataNodes, clusterNodes, links) {
 
@@ -52,14 +57,13 @@ function plotNodesAndLinks(dataNodes, clusterNodes, links) {
     link.target = nodeById.get(link.target);
   });
 
-	force = d3.layout
-        .force()
-        // .strength(-100)
+	force = d3.layout.force()
 		    .nodes(nodes)
       	.links(citationLinks)
+        .linkDistance(linkDistance)
 		    .size([width, height])
 		    .gravity(0)
-		    // .charge(5)
+		    .charge(0)
 		    .on("tick", tick)
 		    .start();
 
@@ -79,8 +83,10 @@ function plotNodesAndLinks(dataNodes, clusterNodes, links) {
 				    .data(nodes)
 				  	.enter().append("circle")
 				    .attr("r", function(d) { return d.radius; })
-            .attr("cx", function(d) { return d.x; })
-    	      .attr("cy", function(d) { return d.y; })
+            .attr("x", function(d) { return window.innerWidth/2; })
+    	      .attr("y", function(d) { return window.innerHeight/2; })
+            .attr("cx", function(d) { return window.innerWidth/2; })
+    	      .attr("cy", function(d) { return window.innerHeight/2; })
 				    .style("fill", function(d) { return color(d.cluster); })
             .style("opacity", function(d) { return d.opacity; })
             .call(force.drag)
@@ -101,12 +107,12 @@ function plotNodesAndLinks(dataNodes, clusterNodes, links) {
 								.style("left", (d3.event.pageX) + "px")
 								.style("top", (d3.event.pageY + 5) + "px");
 					})
-				    .on( "mouseout", mouseout )
+			    .on("mouseout", mouseout )
 					.on("click", function(d) {
-									divArea.transition()
-											.duration(500)
-											.style("opacity", 0);
-					    });
+  					divArea.transition()
+  							.duration(500)
+  							.style("opacity", 0);
+          });
 
   svg.append("svg:defs").selectAll("marker")
         .data(["end"])      // Different link/path types can be defined here
@@ -135,13 +141,12 @@ function plotNodesAndLinks(dataNodes, clusterNodes, links) {
 	function tick(e) {
     width = +svg.attr("width"),
     height = +svg.attr("height");
+    // console.log(`e: ${e.alpha}`);
 	  circle
-	      .each(cluster(10 * e.alpha * e.alpha))
-	      // .each(collide(.5))
+	      // .each(cluster(10 * e.alpha * e.alpha))
+	      .each(collide(e.alpha))
         .attr("cx", function(d) { return d.x = Math.max(d.radius, Math.min(width - d.radius, d.x)); })
         .attr("cy", function(d) { return d.y = Math.max(60 + d.radius, Math.min(height - d.radius, d.y)); });
-	      // .attr("cx", function(d) { return d.x; })
-	      // .attr("cy", function(d) { return d.y; });
     link
         .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
@@ -152,53 +157,52 @@ function plotNodesAndLinks(dataNodes, clusterNodes, links) {
 		    .attr("height", window.innerHeight);
 	}
 
-	// Move d to be adjacent to the cluster node.
-	function cluster(alpha) {
-	  return function(d) {
-	    var cluster = clusters[d.cluster],
-	        k = 1;
-
-	    // console.log(cluster);
-	    // console.log(cluster.x);
-
-	    // For cluster nodes, apply custom gravity.
-	    if (cluster === d) {
-	      cluster = {x: width / 2, y: height / 2, radius: -d.radius};
-	      k = .1 * Math.sqrt(d.radius);
-	    }
-
-	    var x = d.x - cluster.x,
-	        y = d.y - cluster.y,
-	        l = Math.sqrt(x * x + y * y),
-	        r = d.radius + cluster.radius;
-	    if (l != r) {
-	      l = (l - r) / l * alpha * k;
-	      d.x -= x *= l;
-	      d.y -= y *= l;
-	      cluster.x += x;
-	      cluster.y += y;
-	    }
-	  };
-	}
-
-	// Handle mouseout from node
-	function mouseout() {
-		// remove stroke and tooltip
-        d3.select(this).attr({
-          "stroke-width": 0
-        });
-		divArea.transition()
-				.duration(500)
-				.style("opacity", 0);
-	}
+  // Handle mouseout from node
+  function mouseout() {
+    // remove stroke and tooltip
+    d3.select(this).attr({
+      "stroke-width": 0
+    });
+    divArea.transition()
+        .duration(500)
+        .style("opacity", 0);
+  }
 
 }
+
+// // Move d to be adjacent to the cluster node.
+// function cluster(alpha) {
+//   return function(d) {
+//     var cluster = clusters[d.cluster],
+//         k = 1;
+//     // For cluster nodes, apply custom gravity.
+//     if (cluster === d) {
+//       cluster = {x: width / 2, y: height / 2, radius: -d.radius};
+//       k = 0.0001 * Math.sqrt(d.radius);
+//     }
+//
+//     var x = d.x - cluster.x,
+//         y = d.y - cluster.y,
+//         l = Math.sqrt(x * x + y * y),
+//         r = d.radius + cluster.radius;
+//     if (l != r) {
+//       l = (l - r) / l * alpha * k;
+//       l *= 0.1
+//       d.x -= x *= l;
+//       d.y -= y *= l;
+//       cluster.x += x;
+//       cluster.y += y;
+//       // console.log(d.x);
+//     }
+//   };
+// }
 
 // Resolves collisions between d and all other circles.
 function collide(alpha) {
   var quadtree = d3.geom.quadtree(nodes);
   return function(d) {
-    var r = d.radius + maxRadius + Math.max(padding, clusterPadding),
+    var r = d.radius + Math.max(padding, clusterPadding),
+    // var r = d.radius + maxRadius + Math.max(padding, clusterPadding),
         nx1 = d.x - r,
         nx2 = d.x + r,
         ny1 = d.y - r,
@@ -210,7 +214,7 @@ function collide(alpha) {
             l = Math.sqrt(x * x + y * y),
             r = d.radius + quad.point.radius + (d.cluster === quad.point.cluster ? padding : clusterPadding);
         if (l < r) {
-          l = (l - r) / l * alpha;
+          l = (l - r) / l * alpha * 10;
           d.x -= x *= l;
           d.y -= y *= l;
           quad.point.x += x;
@@ -220,29 +224,4 @@ function collide(alpha) {
       return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
     });
   };
-}
-
-function simulateNodes ( n, m, clusters ) {
-	var nodesTemp = d3.range(n).map(function() {
-	  var i = Math.floor(Math.random() * m),
-	      r = Math.sqrt((i + 1) / m * -Math.log(Math.random())) * maxRadius,
-	      d = {cluster: i, radius: r};
-	  if (!clusters[i] || (r > clusters[i].radius)) clusters[i] = d;
-	  return d;
-	});
-	return nodesTemp;
-}
-
-function clearNodes() {
-    nodes = {};
-    links = [];
-    force.start();
-    d3.timer(force.resume);
-}
-
-function codeChange() {
-    selectedCode = this.value;
-    cloneData = clone(allData);
-    clearNodes();
-    updateNodes();
 }
