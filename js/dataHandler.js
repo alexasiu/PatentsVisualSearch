@@ -367,6 +367,10 @@ function assignClusters(m) {
     }
 
     clusterNodes[ currSubset[i].cluster ] = currSubset[i];
+    clusterNodes[ currSubset[i].cluster ]["keyword"] = kws[0];
+    clusterNodes[ currSubset[i].cluster ]["cluster"] = currSubset[i].cluster;
+    clusterNodes[ currSubset[i].cluster ]["radius"] = currSubset[i].radius;
+
 
   }
 

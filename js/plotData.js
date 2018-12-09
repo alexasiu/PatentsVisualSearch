@@ -105,8 +105,10 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 					})
 			    .on("mouseout", mouseout )
 					.on("click", function(d) {
-            console.log(d);
-  					divArea.transition()
+            let newKeyword = clusters[d.cluster]["keyword"].toLowerCase();
+            addSearchKeyword(newKeyword);
+            console.log(newKeyword);
+            divArea.transition()
   							.duration(500)
   							.style("opacity", 0);
           });
@@ -140,7 +142,7 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
     height = +svg.attr("height");
     // console.log(`e: ${e.alpha}`);
 	  circle
-	      // .each(cluster(10 * e.alpha * e.alpha))
+	      .each(cluster(10 * e.alpha * e.alpha))
 	      .each(collide(e.alpha))
         .attr("cx", function(d) {
           d.x = Math.max(d.radius, Math.min(width - d.radius, d.x));
@@ -178,32 +180,32 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 
 }
 
-// // Move d to be adjacent to the cluster node.
-// function cluster(alpha) {
-//   return function(d) {
-//     var cluster = clusters[d.cluster],
-//         k = 1;
-//     // For cluster nodes, apply custom gravity.
-//     if (cluster === d) {
-//       cluster = {x: width / 2, y: height / 2, radius: -d.radius};
-//       k = 0.0001 * Math.sqrt(d.radius);
-//     }
-//
-//     var x = d.x - cluster.x,
-//         y = d.y - cluster.y,
-//         l = Math.sqrt(x * x + y * y),
-//         r = d.radius + cluster.radius;
-//     if (l != r) {
-//       l = (l - r) / l * alpha * k;
-//       l *= 0.1
-//       d.x -= x *= l;
-//       d.y -= y *= l;
-//       cluster.x += x;
-//       cluster.y += y;
-//       // console.log(d.x);
-//     }
-//   };
-// }
+// Move d to be adjacent to the cluster node.
+function cluster(alpha) {
+  return function(d) {
+    var cluster = clusters[d.cluster],
+        k = 1;
+    // For cluster nodes, apply custom gravity.
+    if (cluster === d) {
+      cluster = {x: width / 2, y: height / 2, radius: d.radius};
+      k = Math.sqrt(d.radius);
+    }
+
+    var x = d.x - cluster.x,
+        y = d.y - cluster.y,
+        l = Math.sqrt(x * x + y * y),
+        r = d.radius + cluster.radius;
+    if (l != r) {
+      l = (l - r) / l * alpha * k;
+      l *= 0.5 // reduce gravity power
+      d.x -= x *= l;
+      d.y -= y *= l;
+      cluster.x += x;
+      cluster.y += y;
+      // console.log(d.x);
+    }
+  };
+}
 
 // Resolves collisions between d and all other circles.
 function collide(alpha) {
