@@ -17,11 +17,10 @@ var force = null;
 var divArea = null;
 
 function linkDistance(d) {
-  console.log(d);
-  return d.distance;
+  return Math.pow(d.distance * 10,2);
 }
 
-function plotNodesAndLinks(dataNodes, clusterNodes, links) {
+function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 
 		// TODO replace with data.length
 	var n = dataNodes.length; // total number of circles (all data)
@@ -42,7 +41,6 @@ function plotNodesAndLinks(dataNodes, clusterNodes, links) {
 	// Top keywords form clusters, the largest node and magnet.
 	clusters = clusterNodes; // var clusters = new Array(m);
 	nodes = dataNodes;       // nodes = simulateNodes(n, m, clusters);
-	citationLinks = links;
 
   if (citationLinks == undefined) {return};
 
@@ -83,10 +81,8 @@ function plotNodesAndLinks(dataNodes, clusterNodes, links) {
 				    .data(nodes)
 				  	.enter().append("circle")
 				    .attr("r", function(d) { return d.radius; })
-            .attr("x", function(d) { return window.innerWidth/2; })
-    	      .attr("y", function(d) { return window.innerHeight/2; })
-            .attr("cx", function(d) { return window.innerWidth/2; })
-    	      .attr("cy", function(d) { return window.innerHeight/2; })
+            .attr("cx", function(d) { return d.x; })
+    	      .attr("cy", function(d) { return d.y; })
 				    .style("fill", function(d) { return color(d.cluster); })
             .style("opacity", function(d) { return d.opacity; })
             .call(force.drag)
@@ -109,6 +105,7 @@ function plotNodesAndLinks(dataNodes, clusterNodes, links) {
 					})
 			    .on("mouseout", mouseout )
 					.on("click", function(d) {
+            console.log(d);
   					divArea.transition()
   							.duration(500)
   							.style("opacity", 0);
@@ -145,8 +142,19 @@ function plotNodesAndLinks(dataNodes, clusterNodes, links) {
 	  circle
 	      // .each(cluster(10 * e.alpha * e.alpha))
 	      .each(collide(e.alpha))
-        .attr("cx", function(d) { return d.x = Math.max(d.radius, Math.min(width - d.radius, d.x)); })
-        .attr("cy", function(d) { return d.y = Math.max(60 + d.radius, Math.min(height - d.radius, d.y)); });
+        .attr("cx", function(d) {
+          d.x = Math.max(d.radius, Math.min(width - d.radius, d.x));
+          if (isNaN(d.x)) {
+            d.x = window.innerWidth/2;
+          };
+          return d.x; })
+        .attr("cy", function(d) {
+          d.y = Math.max(60 + d.radius, Math.min(height - d.radius, d.y));
+          if (isNaN(d.y)) {
+            d.y = window.innerHeight/2;
+          };
+          return d.y;
+        });
     link
         .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
@@ -214,7 +222,7 @@ function collide(alpha) {
             l = Math.sqrt(x * x + y * y),
             r = d.radius + quad.point.radius + (d.cluster === quad.point.cluster ? padding : clusterPadding);
         if (l < r) {
-          l = (l - r) / l * alpha * 10;
+          l = (l - r) / l * alpha;
           d.x -= x *= l;
           d.y -= y *= l;
           quad.point.x += x;

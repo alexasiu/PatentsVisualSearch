@@ -79,32 +79,62 @@ function refreshQuery() {
       if (response == undefined) {console.log(response)};
       citations = loadCitations(response.rows);
       incitationCount = citations[0];
-      citationLinks = citations[1];
+      promises = citations[1];
 
-      for (i = 0; i < response.rows.length; i++) {
-        d = response.rows[i];
-        currSubset.push({
-            "id": d.f[0].v,
-            "title": d.f[1].v,
-            "date": d.f[2].v,
-            "abstract": d.f[3].v,
-            "assignee": d.f[4].v,
-            "inventors": d.f[5].v,
-            "citations": d.f[6].v,
-            "keywords": d.f[7].v,
-            "cluster": Math.floor(Math.random() * clusterM),
-            "radius": getRadius(incitationCount, d.f[0].v), // TODO set radius based on incitationCount
-            // x: 350,
-            // y: 350,
-            // px: 350,
-            // py: 350,
-            opacity: turnDateIntoOpacity(d.f[2].v)
-          });
-      }
+      Promise.all(promises).then(function(citationLinks) {
+        for (i = 0; i < response.rows.length; i++) {
+          d = response.rows[i];
+          currSubset.push({
+              "id": d.f[0].v,
+              "title": d.f[1].v,
+              "date": d.f[2].v,
+              "abstract": d.f[3].v,
+              "assignee": d.f[4].v,
+              "inventors": d.f[5].v,
+              "citations": d.f[6].v,
+              "keywords": d.f[7].v,
+              "cluster": Math.floor(Math.random() * clusterM),
+              "radius": getRadius(incitationCount, d.f[0].v), // TODO set radius based on incitationCount
+              // x: parseInt(350),
+              // y: 350,
+              // px: 350,
+              // py: 350,
+              opacity: turnDateIntoOpacity(d.f[2].v)
+            });
+        }
 
-      var clusterNodes = assignClusters(clusterM);
-      //var clusterNodes = [currSubset[0],currSubset[1],currSubset[2],currSubset[3]]
-      plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
+        var clusterNodes = assignClusters(clusterM);
+        //var clusterNodes = [currSubset[0],currSubset[1],currSubset[2],currSubset[3]]
+        plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
+      });
+
+      // incitationCount = citations[0];
+      // citationLinks = citations[1];
+      //
+      // for (i = 0; i < response.rows.length; i++) {
+      //   d = response.rows[i];
+      //   currSubset.push({
+      //       "id": d.f[0].v,
+      //       "title": d.f[1].v,
+      //       "date": d.f[2].v,
+      //       "abstract": d.f[3].v,
+      //       "assignee": d.f[4].v,
+      //       "inventors": d.f[5].v,
+      //       "citations": d.f[6].v,
+      //       "keywords": d.f[7].v,
+      //       "cluster": Math.floor(Math.random() * clusterM),
+      //       "radius": getRadius(incitationCount, d.f[0].v), // TODO set radius based on incitationCount
+      //       // x: 350,
+      //       // y: 350,
+      //       // px: 350,
+      //       // py: 350,
+      //       opacity: turnDateIntoOpacity(d.f[2].v)
+      //     });
+      // }
+      //
+      // var clusterNodes = assignClusters(clusterM);
+      // //var clusterNodes = [currSubset[0],currSubset[1],currSubset[2],currSubset[3]]
+      // plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
 
   });
 
@@ -175,16 +205,26 @@ function getIntersection(set1, set2) {
 }
 
 function getSimilarityScore(patent1, patent2) {
-
   let p1words = new Set(patent1.f[7].v.split(' '));
   let p2words = new Set(patent2.f[7].v.split(' '));
-  console.log(p1words);
-  console.log(p2words);
-  let intersection = getIntersection(p1words, p2words);
-  let union = getUnion(p1words, p2words);
-  console.log(intersection);
-  console.log(union);
-  return (intersection.length / union.length);
+
+  var intersection = new Set();
+
+  p1words.forEach(function(w) {
+    if (p2words.has(w)) {
+      intersection.add(w);
+    }
+  });
+
+  var union = new Set();
+  p1words.forEach(function(w) {
+    union.add(w);
+  });
+  p2words.forEach(function(w) {
+    union.add(w);
+  });
+
+  return intersection.size / union.size;
 }
 
 function updateClusterNumber(sliderValue) {
@@ -221,11 +261,7 @@ function loadCitations(patents) {
     for (x = 0; x < citations.length; x++) {
       let citation = citations[x];
       if (searchResults.has(citation)) {
-        count += 1;
-        console.log(count);
-        console.log(`patent: ${patent.f[0].v}, citation: ${citation}`);
-        citationLinks.push({"source": patent.f[0].v, "target": citation, "distance": 50});
-        // citationLinks.push({"source": patent.f[0].v, "target": citation, "distance": getSimilarityScore(patent, getPatentById(citation, patents))});
+        citationLinks.push({"source": patent.f[0].v, "target": citation, "distance": 0});
         if (Object.keys(incitationCount).includes(citation)) {
           incitationCount[citation] += 1
         } else {
@@ -234,8 +270,44 @@ function loadCitations(patents) {
       }
     }
   };
-  console.log("all loaded");
-  return [incitationCount, citationLinks];
+  return [incitationCount, getAddLinkDistancePromises(citationLinks, incitationCount, patents)];
+}
+
+function getAddLinkDistancePromises(citationLinks, incitationCount, patents) {
+  let promises = [];
+  let iterLength = citationLinks.length;
+  citationLinks.forEach(function(link) {
+    promises.push(new Promise(function(resolve, reject) {
+      let sourcePatent = getPatentById(link["source"], patents);
+      let targetPatent = getPatentById(link["target"], patents);
+      link["distance"] = getSimilarityScore(sourcePatent, targetPatent);
+      resolve(link);
+    }));
+  });
+  // Promise.all(promises).then(function(newCitationLinks) {
+  //   return [incitationCount, newCitationLinks] ;
+  // });
+  return promises;
+
+  // return new Promise(function(resolve, reject) {
+  //   let promises = [];
+  //   let iterLength = citationLinks.length;
+  //   for (i = 0; i < iterLength; i++) {
+  //     console.log(i);
+  //     let link = citationLinks[i];
+  //     promises.push(new Promise(function(resolve, reject) {
+  //       let sourcePatent = getPatentById(link["source"], patents);
+  //       let targetPatent = getPatentById(link["target"], patents);
+  //       let similarityScore = getSimilarityScore(sourcePatent, targetPatent);
+  //       resolve(similarityScore);
+  //     }));
+  //   }
+  //   console.log(promises.length);
+  //   Promise.all(promises).then(function(similarityScores) {
+  //     console.log(similarityScores);
+  //     resolve([incitationCount, citationLinks]);
+  //   });
+  // });
 }
 
 function assignClusters(m) {
