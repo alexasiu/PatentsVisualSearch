@@ -75,6 +75,7 @@ function refreshQuery() {
   request.execute(
     function(response) {
       if (response == undefined) {console.log(response)};
+      if (response.rows == undefined) {console.log(response)};
       citations = loadCitations(response.rows);
       incitationCount = citations[0];
       promises = citations[1];
