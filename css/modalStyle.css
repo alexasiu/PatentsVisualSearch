@@ -1,6 +1,8 @@
 
 .modalInfo{
 	padding-top: 400px;
+	padding-right: 0;
+	margin-right: 0;
 }
 
 .modal.left .modal-dialog,

@@ -92,45 +92,50 @@
 </nav>
 <!-- End navbar -->
 
-<!-- Visualization region -->
-<div class="row col-sm-12 col-xs-12" id="viz_area">
+<div class="row">
 
-</div>
-<!-- End visualization region -->
+  <div class="modalInfo col-md-1 col-sm-1 col-xs-1" id="modal">
 
-<div class="row modalInfo col-sm-12 col-xs-12" id="modal">
+    <div class="buttonRow">
+      <button type="button" class="btn btn-modal" data-toggle="modal" data-target="#infoModal">
+        +Info
+      </button>
+    </div>
 
-  <div class="buttonRow">
-    <button type="button" class="btn btn-modal" data-toggle="modal" data-target="#infoModal">
-      +Info
-    </button>
+    <!-- Modal -->
+    <div class="modal left fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Information Encoding</h4>
+          </div>
+
+          <div class="modal-body">
+            <ul>
+              <li>Circles represent patents and arrows represent citations.</li>
+              <li>Position (proximity) of circles relative to each other demonstrate the similarity between the patents.</li>
+              <li>Hue of circles shows patent clusters grouped based on keywords similarity.</li> 
+              <li>Value of color shows the quantitative age of the patent from “1 year or less” (darkest) to “20 years or more” (lightest).</li>
+              <li>Size of circles reinforces the presentation of in-citations (number of other patents in the search result that cited the given patent)</li>
+            </ul>
+          </div>
+
+        </div><!-- modal-content -->
+      </div><!-- modal-dialog -->
+    </div><!-- modal -->
+
   </div>
+  <!-- end modal -->
 
-  <!-- Modal -->
-  <div class="modal left fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
+  <!-- Visualization region -->
+  <div class="col-md-11 col-sm-11 col-xs-11" id="viz_area">
+  </div>
+  <!-- End visualization region -->
 
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Information Encoding</h4>
-        </div>
 
-        <div class="modal-body">
-          <ul>
-            <li>Circles represent patents and arrows represent citations.</li>
-            <li>Position (proximity) of circles relative to each other demonstrate the similarity between the patents.</li>
-            <li>Hue of circles shows patent clusters grouped based on keywords similarity.</li> 
-            <li>Value of color shows the quantitative age of the patent from “1 year or less” (darkest) to “20 years or more” (lightest).</li>
-            <li>Size of circles reinforces the presentation of in-citations (number of other patents in the search result that cited the given patent)</li>
-          </ul>
-        </div>
-
-      </div><!-- modal-content -->
-    </div><!-- modal-dialog -->
-  </div><!-- modal -->
 </div>
-<!-- end modal -->
 
 
 <!-- Bootstrap core JavaScript -->
