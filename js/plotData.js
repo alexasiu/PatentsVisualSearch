@@ -107,7 +107,6 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 			    	.on("mouseout", mouseout )
 					.on("click", function(d) {
             let newKeyword = clusters[d.cluster]["keyword"].toLowerCase();
-            addSearchKeyword(newKeyword);
             keywordTagify.addTags([newKeyword]);
             divArea.transition()
   							.duration(500)
