@@ -8,9 +8,7 @@ var startDate = null;
 var endDate = null;
 var assignees = [];
 var inventors = [];
-var clusterM = 5;
-
-
+var clusterM = 6;
 
 // Authentication Method
 function onClientLoadHandler() {
@@ -104,6 +102,7 @@ function refreshQuery() {
         }
 
         var clusterNodes = assignClusters(clusterM);
+        console.log(citationLinks);
         //var clusterNodes = [currSubset[0],currSubset[1],currSubset[2],currSubset[3]]
         plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
       });
