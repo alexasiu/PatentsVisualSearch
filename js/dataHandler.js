@@ -12,7 +12,6 @@ var clusterM = 6;
 
 // Authentication Method
 function onClientLoadHandler() {
-  // authenticate to BigQuery, it asks for your Google credential to perform oauth
   var config = {
     'client_id': '1001245404093-qma4s3nbj518ndajlekiin7501mh1o62.apps.googleusercontent.com',
     'scope': 'https://www.googleapis.com/auth/bigquery'
@@ -38,7 +37,6 @@ function refreshQuery() {
 
   var query = "SELECT * FROM [patentsearchdata.filteredFull] ";
 
-  // add keyword query
   for (i=0; i<keywords.length; i++) {
     if (i==0) { query += "WHERE "; }
     query += "Lower([keywords]) LIKE '%" + keywords[i] + "%'";
@@ -48,13 +46,11 @@ function refreshQuery() {
     if (addIn) { query += " AND "; }
   }
 
-  // add inventor query
   for (i=0; i<inventors.length; i++) {
     query += "Lower([inventor_name]) LIKE '%" + inventors[i] + "%'";
     if (i!=inventors.length-1) { query += " AND "}
   }
 
-  // add assignee query
   if ( (addKey || addIn) && addAssignee ) { query += " AND "; }
   for (i=0; i<assignees.length; i++) {
     query += "Lower([assignee_name]) LIKE '%" + assignees[i] + "%'";
@@ -93,48 +89,14 @@ function refreshQuery() {
               "citations": d.f[6].v,
               "keywords": d.f[7].v,
               "cluster": Math.floor(Math.random() * clusterM),
-              "radius": getRadius(incitationCount, d.f[0].v), // TODO set radius based on incitationCount
-              // x: parseInt(350),
-              // y: 350,
-              // px: 350,
-              // py: 350,
+              "radius": getRadius(incitationCount, d.f[0].v),
               opacity: turnDateIntoOpacity(d.f[2].v)
             });
         }
 
         var clusterNodes = assignClusters(clusterM);
-        // console.log(citationLinks);
-        //var clusterNodes = [currSubset[0],currSubset[1],currSubset[2],currSubset[3]]
         plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
       });
-
-      // incitationCount = citations[0];
-      // citationLinks = citations[1];
-      //
-      // for (i = 0; i < response.rows.length; i++) {
-      //   d = response.rows[i];
-      //   currSubset.push({
-      //       "id": d.f[0].v,
-      //       "title": d.f[1].v,
-      //       "date": d.f[2].v,
-      //       "abstract": d.f[3].v,
-      //       "assignee": d.f[4].v,
-      //       "inventors": d.f[5].v,
-      //       "citations": d.f[6].v,
-      //       "keywords": d.f[7].v,
-      //       "cluster": Math.floor(Math.random() * clusterM),
-      //       "radius": getRadius(incitationCount, d.f[0].v), // TODO set radius based on incitationCount
-      //       // x: 350,
-      //       // y: 350,
-      //       // px: 350,
-      //       // py: 350,
-      //       opacity: turnDateIntoOpacity(d.f[2].v)
-      //     });
-      // }
-      //
-      // var clusterNodes = assignClusters(clusterM);
-      // //var clusterNodes = [currSubset[0],currSubset[1],currSubset[2],currSubset[3]]
-      // plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
 
   });
 
@@ -233,10 +195,6 @@ function updateClusterNumber(sliderValue) {
     clusterM = sliderValue;
 }
 
-// function updateCluserNumber(slider) {
-//   clusterM = slider+1; // Adjusted for 0 index
-// }
-
 function getPatentById(patentId, patents) {
   for (i = 0; i < patents.length; i++) {
     d = patents[i];
@@ -248,8 +206,8 @@ function getPatentById(patentId, patents) {
 
 function loadCitations(patents) {
 
-  var incitationCount = {}; // {patent_id : Int}
-  var citationLinks = []; // {source: patent_id of citing, target: patent_id of cited}
+  var incitationCount = {};
+  var citationLinks = [];
 
   let searchResults = new Set();
 
@@ -286,30 +244,8 @@ function getAddLinkDistancePromises(citationLinks, incitationCount, patents) {
       resolve(link);
     }));
   });
-  // Promise.all(promises).then(function(newCitationLinks) {
-  //   return [incitationCount, newCitationLinks] ;
-  // });
   return promises;
 
-  // return new Promise(function(resolve, reject) {
-  //   let promises = [];
-  //   let iterLength = citationLinks.length;
-  //   for (i = 0; i < iterLength; i++) {
-  //     console.log(i);
-  //     let link = citationLinks[i];
-  //     promises.push(new Promise(function(resolve, reject) {
-  //       let sourcePatent = getPatentById(link["source"], patents);
-  //       let targetPatent = getPatentById(link["target"], patents);
-  //       let similarityScore = getSimilarityScore(sourcePatent, targetPatent);
-  //       resolve(similarityScore);
-  //     }));
-  //   }
-  //   console.log(promises.length);
-  //   Promise.all(promises).then(function(similarityScores) {
-  //     console.log(similarityScores);
-  //     resolve([incitationCount, citationLinks]);
-  //   });
-  // });
 }
 
 function assignClusters(m) {
@@ -319,16 +255,13 @@ function assignClusters(m) {
   var val_freq = [];
   var kw_array = [];
 
-  // collect and sort the keywords
   for (var i = 0; i < currSubset.length ; i++) {
     if (currSubset[i].keywords.indexOf(',') > -1) {
-      // if there are multiple keywords
       var kws = currSubset[i].keywords.split(",");
       for (var j=0; j<kws.length; j++ ) {
         getSingleCluster( key_freq, val_freq, kw_array, kws[j] );
       }
     } else {
-      // if there's only one
       getSingleCluster(key_freq, val_freq, kw_array, currSubset[i].keywords);
     }
   }
@@ -338,16 +271,13 @@ function assignClusters(m) {
     sort_dic[i] = [key_freq[i], val_freq[i]];
   }
 
-  // Sort the array based on the second element
   sort_dic.sort(function(first, second) {
     return second[1] - first[1];
   });
-  // get top m
   sort_dic_top = sort_dic.slice(0,m-1);
 
   for (var i = 0; i < currSubset.length ; i++) {
     if (currSubset[i].keywords.indexOf(',') > -1) {
-      // if there are multiple keywords
       var kws = currSubset[i].keywords.split(",");
       var clusterNum = getSingleCluster( key_freq, val_freq, kw_array, kws[0] );
 
@@ -363,7 +293,6 @@ function assignClusters(m) {
         }
       }
     } else {
-      // if there's only one
       var clusterNum = getSingleCluster(key_freq, val_freq, currSubset[i].keywords);
       currSubset[i].cluster = itemIn2DArray(clusterNum, sort_dic_top);
     }

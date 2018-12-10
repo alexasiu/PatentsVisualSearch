@@ -4,12 +4,12 @@
 
 var width  = window.innerWidth,
     height = window.innerHeight,
-    padding = 5,         // separation between same-color circles
-    clusterPadding = 12, // separation between different-color circles
+    padding = 5,
+    clusterPadding = 12,
     minRadius = 4,
     maxRadius = 12;
 
-var nodes = null; //store current data
+var nodes = null;
 var citationLinks = null;
 var svg = null;
 var circle = null;
@@ -25,16 +25,13 @@ function linkDistance(d) {
 }
 
 function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
-  	// console.log(citationLinks);
 
-	var n = dataNodes.length; // total number of circles (all data)
-		// TODO replace with top keywords
-	var m = clusterNodes.length;  // number of distinct clusters (top keywords)
+	var n = dataNodes.length;
+	var m = clusterNodes.length;
 
 	var color = d3.scale.category10()
 	    .domain( d3.range(m) );
 
-	// Reset the force layout
 	if (nodes != null) {
 		circle = {};
 		nodes = {};
@@ -42,9 +39,8 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 		svg.selectAll('circle').remove();
 	}
 
-	// Top keywords form clusters, the largest node and magnet.
-	clusters = clusterNodes; // var clusters = new Array(m);
-	nodes = dataNodes;       // nodes = simulateNodes(n, m, clusters);
+	clusters = clusterNodes;
+	nodes = dataNodes;
 
   if (citationLinks == undefined) {return};
   if (citationLinks == undefined) {return};
@@ -120,8 +116,8 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
           });
 
   svg.append("svg:defs").selectAll("marker")
-        .data(["end"])      // Different link/path types can be defined here
-      .enter().append("svg:marker")    // This section adds in the arrows
+        .data(["end"])
+      .enter().append("svg:marker")
         .attr("id", String)
         .attr("viewBox", "0 -5 10 10")
         .attr("refX", 2)
@@ -146,7 +142,6 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 	function tick(e) {
     width = +svg.attr("width"),
     height = +svg.attr("height");
-    // console.log(`e: ${e.alpha}`);
 	  circle
 	      .each(cluster(10 * e.alpha * e.alpha))
 	      .each(collide(e.alpha))
@@ -173,9 +168,7 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 		    .attr("height", window.innerHeight);
 	}
 
-  // Handle mouseout from node
   function mouseout() {
-    // remove stroke and tooltip
     d3.select(this).attr({
       "stroke-width": 0
     });
@@ -186,12 +179,12 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 
 }
 
-// Move d to be adjacent to the cluster node.
 function cluster(alpha) {
   return function(d) {
+
     var cluster = clusters[d.cluster],
         k = 1;
-    // For cluster nodes, apply custom gravity.
+
     if (cluster === d) {
       cluster = {x: width / 2, y: height / 2, radius: d.radius};
       k = Math.sqrt(d.radius);
@@ -203,22 +196,19 @@ function cluster(alpha) {
         r = d.radius + cluster.radius;
     if (l != r) {
       l = (l - r) / l * alpha * k;
-      l *= 0.5 // reduce gravity power
+      l *= 0.5
       d.x -= x *= l;
       d.y -= y *= l;
       cluster.x += x;
       cluster.y += y;
-      // console.log(d.x);
     }
   };
 }
 
-// Resolves collisions between d and all other circles.
 function collide(alpha) {
   var quadtree = d3.geom.quadtree(nodes);
   return function(d) {
     var r = d.radius + Math.max(padding, clusterPadding),
-    // var r = d.radius + maxRadius + Math.max(padding, clusterPadding),
         nx1 = d.x - r,
         nx2 = d.x + r,
         ny1 = d.y - r,

@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="favicon.ico">
@@ -117,7 +116,7 @@
               <li><b>Circles</b> represent patents</li>
               <li><b>Arrows</b> represent citations.</li>
               <li><b>Position (proximity)</b> of circles relative to each other demonstrate the similarity between the patents.</li>
-              <li><b>Hue</b> of circles shows patent clusters grouped based on keywords similarity.</li> 
+              <li><b>Hue</b> of circles shows patent clusters grouped based on keywords similarity.</li>
               <li><b>Value (opacity)</b> of color shows the quantitative age of the patent from “1 year or less” (darkest) to “20 years or more” (lightest).</li>
               <li><b>Size</b> of circles reinforces the presentation of in-citations (number of other patents in the search result that cited the given patent)</li>
             </ul>
@@ -152,13 +151,11 @@
 <!-- Tagify JS for keyword search -->
 <script type="text/javascript" src="js/external/tagify.min.js"></script>
 
-<!-- Google client -->
 <script src="https://apis.google.com/js/client.js"></script>
-<!-- TODO UNCOMMENT when deploying -->
 
 <!-- Our JS -->
 <script type="text/javascript">
-  
+
 </script>
 
 <script type="text/javascript" src="js/dataHandler.js"></script> <!-- Query and filter data -->
@@ -173,9 +170,7 @@
       $(selector).toggleClass('in');
     });
 
-    // run client library load and authentications
     $.getScript("https://apis.google.com/js/client.js", function(d) {
-      // TODO UNCOMMENT when deploying
       onClientLoadHandler();
     });
 
@@ -221,99 +216,83 @@
 <script>
   var input = document.querySelector('input[name=keywords]');
 
-  // init Tagify script on the "keyword input" box
   keywordTagify = new Tagify(input);
 
-  // "remove all" button event listener
   document.querySelector('.keywordsRemoveAllBtn')
           .addEventListener('click', keywordTagify.removeAllTags.bind(keywordTagify))
 
-  // event listeners
   keywordTagify.on('add', onAddKeyword)
                .on('remove', onRemoveKeyword)
                .on('input', onInputKeyword)
                .on('invalid', onInvalidKeyword)
 
-  // keyword added callback
   function onAddKeyword(e){
-    // console.log("added keyword: ", e.detail.value)
     addSearchKeyword(e.detail.value.toLowerCase());
   }
-  // keyword remvoed callback
+
   function onRemoveKeyword(e){
-    // console.log("curr keywords:", keywordTagify.value);
     removeSearchKeyword(keywordTagify.value);
   }
-  // on character(s) added/removed (user is typing/deleting)
+
   function onInputKeyword(e){
   }
-  // invalid tag added callback
+
   function onInvalidKeyword(e){
   }
-//**  end keyword bar **//
+
 </script>
 
 <!-- Assignee Bar -->
 <script>
   var input = document.querySelector('input[name=assignee]');
-  // init Tagify script on the "keyword input" box
+
   assigneeTagify = new Tagify(input);
 
-  // "remove all" button event listener
   document.querySelector('.assigneeRemoveAllBtn')
           .addEventListener('click', assigneeTagify.removeAllTags.bind(assigneeTagify))
 
-  // event listeners
   assigneeTagify.on('add', onAddAssignee)
                 .on('remove', onRemoveAssignee)
                 .on('invalid', onInvalidAssignee)
 
-  // keyword added callback
   function onAddAssignee(e){
     addAssigneeName(e.detail.value.toLowerCase());
-    // console.log("added assignee: ", e.detail.value)
   }
-  // keyword remvoed callback
+
   function onRemoveAssignee(e){
-    // console.log("current assignees:", assigneeTagify.value)
     removeAssigneeName(assigneeTagify.value);
   }
-  // invalid tag added callback
+
   function onInvalidAssignee(e){
-    // console.log(e, e.detail);
+
   }
-//**  end assignee bar **//
+
 </script>
 
 <!-- Inventor Bar -->
 <script>
   var input = document.querySelector('input[name=inventor]');
-  // init Tagify script on the "keyword input" box
+
   inventorTagify = new Tagify(input);
 
-  // "remove all" button event listener
   document.querySelector('.inventorRemoveAllBtn')
           .addEventListener('click', inventorTagify.removeAllTags.bind(inventorTagify))
 
-  // event listeners
   inventorTagify.on('add', onAddInventor)
                 .on('remove', onRemoveInventor)
                 .on('invalid', onInvalidInventor)
 
-  // keyword added callback
   function onAddInventor(e){
     addInventorName(e.detail.value.toLowerCase());
-    // console.log("added inventor:",e.detail.value)
   }
-  // keyword remvoed callback
+
   function onRemoveInventor(e){
-    // console.log("curr inventors:", inventorTagify.value)
     removeInventorName(inventorTagify.value);
   }
-  // invalid tag added callback
+
   function onInvalidInventor(e){
   }
-//**  end inventor bar **//
+
 </script>
 
 <!-- Keyword Slider -->
@@ -329,19 +308,16 @@
     sliderValue = e.newValue + 1;
 
     updateClusterNumber(sliderValue);
-    // document.getElementById("ex6SliderVal").textContent = sliderValue;
   });
 </script>
 
 <!-- Refresh Button-->
 <script>
 
-  // "remove all" button event listener
   document.querySelector('.refreshVizBtn')
           .addEventListener('click', onRefreshVisualization);
   document.querySelector('.refreshVizBtn').disabled = true;
 
-  // keyword added callback
   function onRefreshVisualization(e){
     console.log("refresh");
     refreshQuery();

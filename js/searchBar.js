@@ -1,4 +1,4 @@
-/* 
- * Functions for search bar 
+/*
+ * Functions for search bar
  *
  */
