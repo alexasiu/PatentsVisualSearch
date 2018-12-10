@@ -2,7 +2,7 @@
 // Adapted from example by Mike Bostock: https://bl.ocks.org/mbostock/1748247
 //       and https://bl.ocks.org/Thanaporn-sk/c7f74cb5051a0cdf6cf077a9db332dfb
 
-var width = window.innerWidth,
+var width  = window.innerWidth,
     height = window.innerHeight,
     padding = 3,         // separation between same-color circles
     clusterPadding = 12, // separation between different-color circles
