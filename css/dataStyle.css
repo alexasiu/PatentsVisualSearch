@@ -1,12 +1,10 @@
 div.tooltipNode {
   position: absolute;
   text-align: center;
-/*  width: 500px;
-  height: 150px;*/
   max-width: 500px;
   display: block;
   padding: 5px;
   font: 12px sans-serif;
-  background: gray;
+  background: #F0F0F0;
   pointer-events: none;
 }

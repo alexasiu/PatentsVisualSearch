@@ -19,6 +19,7 @@
     <!-- Our stylesheets -->
     <link rel="stylesheet" type="text/css" href="css/style.css" >
     <link rel="stylesheet" type="text/css" href="css/dataStyle.css" >
+    <link rel="stylesheet" type="text/css" href="css/modalStyle.css" >
 </head>
 
 <body>
@@ -91,10 +92,51 @@
 </nav>
 <!-- End navbar -->
 
-<!-- Visualization region -->
-<div class="row col-sm-12 col-xs-12" id="viz_area">
+<div class="row">
+
+  <div class="modalInfo col-md-1 col-sm-1 col-xs-1" id="modal">
+
+    <div class="buttonRow">
+      <button type="button" class="btn btn-modal" data-toggle="modal" data-target="#infoModal">
+        +Info
+      </button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal left fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Information Encoding</h4>
+          </div>
+
+          <div class="modal-body">
+            <ul>
+              <li><b>Circles</b> represent patents</li>
+              <li><b>Arrows</b> represent citations.</li>
+              <li><b>Position (proximity)</b> of circles relative to each other demonstrate the similarity between the patents.</li>
+              <li><b>Hue</b> of circles shows patent clusters grouped based on keywords similarity.</li> 
+              <li><b>Value (opacity)</b> of color shows the quantitative age of the patent from “1 year or less” (darkest) to “20 years or more” (lightest).</li>
+              <li><b>Size</b> of circles reinforces the presentation of in-citations (number of other patents in the search result that cited the given patent)</li>
+            </ul>
+          </div>
+
+        </div><!-- modal-content -->
+      </div><!-- modal-dialog -->
+    </div><!-- modal -->
+
+  </div>
+  <!-- end modal -->
+
+  <!-- Visualization region -->
+  <div class="col-md-11 col-sm-11 col-xs-11" id="viz_area">
+  </div>
+  <!-- End visualization region -->
+
 </div>
-<!-- End visualization region -->
+
 
 <!-- Bootstrap core JavaScript -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -115,6 +157,10 @@
 <!-- TODO UNCOMMENT when deploying -->
 
 <!-- Our JS -->
+<script type="text/javascript">
+  
+</script>
+
 <script type="text/javascript" src="js/dataHandler.js"></script> <!-- Query and filter data -->
 <script type="text/javascript" src="js/plotData.js"></script> <!-- Plot data as nodes and links -->
 
@@ -174,6 +220,7 @@
 <!-- Keyword bar -->
 <script>
   var input = document.querySelector('input[name=keywords]');
+
   // init Tagify script on the "keyword input" box
   keywordTagify = new Tagify(input);
 
