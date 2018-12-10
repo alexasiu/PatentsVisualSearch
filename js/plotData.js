@@ -25,9 +25,8 @@ function linkDistance(d) {
 }
 
 function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
-  	console.log(citationLinks);
+  	// console.log(citationLinks);
 
-		// TODO replace with data.length
 	var n = dataNodes.length; // total number of circles (all data)
 		// TODO replace with top keywords
 	var m = clusterNodes.length;  // number of distinct clusters (top keywords)
@@ -94,13 +93,14 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
             .call(force.drag)
 					.on("mouseover", function(d) {
 						d3.select(this).attr({
-							stroke: "gray",
+							stroke: "black",
 							"stroke-width": 5
 				        });
 						divArea.transition()
 								.duration(20)
 								.style("opacity", .9);
-						divArea.html("<p style='line-height: 1.0;'><b>" + d.title + "</b></p>"
+						divArea.html("<p style='color:"+color(d.cluster)+"'><b><span style='color:black'>Cluster: </span>"+clusters[d.cluster]["keyword"].toLowerCase()+"</b></p>"
+									+"<p style='line-height: 1.0;'><b>" + d.title + "</b></p>"
 									+"<p style='line-height: 0.9;'>Date: " + d.date + "</p>"
 									+"<p style='line-height: 0.9;'>Inventor: " + d.inventors +"</p>"
 									+"<p style='line-height: 0.9;'>Assignee: " + d.assignee + "</p>"
@@ -109,7 +109,7 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 								.style("left", (d3.event.pageX) + "px")
 								.style("top", (d3.event.pageY + 5) + "px");
 					})
-			    .on("mouseout", mouseout )
+			    	.on("mouseout", mouseout )
 					.on("click", function(d) {
             let newKeyword = clusters[d.cluster]["keyword"].toLowerCase();
             addSearchKeyword(newKeyword);
