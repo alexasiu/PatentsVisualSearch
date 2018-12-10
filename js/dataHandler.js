@@ -102,7 +102,7 @@ function refreshQuery() {
         }
 
         var clusterNodes = assignClusters(clusterM);
-        console.log(citationLinks);
+        // console.log(citationLinks);
         //var clusterNodes = [currSubset[0],currSubset[1],currSubset[2],currSubset[3]]
         plotNodesAndLinks( currSubset, clusterNodes, citationLinks );
       });
@@ -146,6 +146,8 @@ function getRadius(incitationCount, patent_id) {
   }
   return 10 * scaleFactor;
 }
+
+
 
 function addSearchKeyword(keywordIn) {
   keywords.push(keywordIn);

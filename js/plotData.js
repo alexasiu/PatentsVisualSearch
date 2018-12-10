@@ -16,12 +16,16 @@ var circle = null;
 var force = null;
 var divArea = null;
 
+var keywordTagify = null;
+var assigneeTagify = null;
+var inventorTagify = null;
+
 function linkDistance(d) {
   return Math.pow(d.distance * 10,2);
 }
 
 function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
-  console.log(citationLinks);
+  	console.log(citationLinks);
 
 		// TODO replace with data.length
 	var n = dataNodes.length; // total number of circles (all data)
@@ -109,7 +113,7 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 					.on("click", function(d) {
             let newKeyword = clusters[d.cluster]["keyword"].toLowerCase();
             addSearchKeyword(newKeyword);
-            console.log(newKeyword);
+            keywordTagify.addTags([newKeyword]);
             divArea.transition()
   							.duration(500)
   							.style("opacity", 0);
