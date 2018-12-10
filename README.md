@@ -2,7 +2,7 @@
 CS 448B Final Project
 
 To query the data, we are using the BigQuery API; since our app isn't verified by Google and the BigQuery service is not enitrely free, this only allows authorized users to make queries. Thus to properly use the visualization, you will need to login from an authorized account. To view the visualization follow the steps:
-1. Open link http://alexasiu.com/CS448B-final/final.html
+1. Open link https://alexasiu.com/CS448B-final/final.html . Important for it to be https. If running from local server, the name should be http://localhost:8080 exactly.  This is because only authorized urls are allowed when authenticating.
 2. Make sure pop-ups are enabled. 
 3. Once the site loads you should see a pop-up window for a Google login.
 4. Login with the following account information
