@@ -25,7 +25,6 @@ function linkDistance(d) {
 }
 
 function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
-
 	var n = dataNodes.length;
 	var m = clusterNodes.length;
 
@@ -35,14 +34,14 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 	if (nodes != null) {
 		circle = {};
 		nodes = {};
-		citationLinks = {};
-		svg.selectAll('circle').remove();
+    link = {};
+    svg.selectAll('circle').remove();
+    svg.selectAll('line').remove();
 	}
 
 	clusters = clusterNodes;
 	nodes = dataNodes;
 
-  if (citationLinks == undefined) {return};
   if (citationLinks == undefined) {return};
 
   var nodeById = d3.map();
