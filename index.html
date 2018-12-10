@@ -279,9 +279,8 @@
             value: 5
   });
   slider.on("change", function(e) {
-    sliderValue = e.newValue;
+    sliderValue = e.newValue + 1;
 
-    console.log(sliderValue);
     updateClusterNumber(sliderValue);
     // document.getElementById("ex6SliderVal").textContent = sliderValue;
   });

@@ -4,7 +4,7 @@
 
 var width  = window.innerWidth,
     height = window.innerHeight,
-    padding = 3,         // separation between same-color circles
+    padding = 5,         // separation between same-color circles
     clusterPadding = 12, // separation between different-color circles
     minRadius = 4,
     maxRadius = 12;
@@ -21,6 +21,7 @@ function linkDistance(d) {
 }
 
 function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
+  console.log(citationLinks);
 
 		// TODO replace with data.length
 	var n = dataNodes.length; // total number of circles (all data)
@@ -42,6 +43,7 @@ function plotNodesAndLinks(dataNodes, clusterNodes, citationLinks) {
 	clusters = clusterNodes; // var clusters = new Array(m);
 	nodes = dataNodes;       // nodes = simulateNodes(n, m, clusters);
 
+  if (citationLinks == undefined) {return};
   if (citationLinks == undefined) {return};
 
   var nodeById = d3.map();
