@@ -37,7 +37,6 @@ function refreshQuery() {
 
   var query = "SELECT * FROM [patentsearchdata.filteredFull] ";
 
-  console.log(keywords);
   for (i=0; i<keywords.length; i++) {
     if (i==0) { query += "WHERE "; }
     query += "Lower([keywords]) LIKE '%" + keywords[i] + "%'";
@@ -59,7 +58,7 @@ function refreshQuery() {
   }
 
   query += " LIMIT 500;"
-  
+
   var request = gapi.client.bigquery.jobs.query({
     'projectId': "patent-search-224318",
     'timeoutMs': '50000',
