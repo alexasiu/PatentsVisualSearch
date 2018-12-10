@@ -59,7 +59,7 @@ function refreshQuery() {
   }
 
   query += " LIMIT 500;"
-  console.log(query);
+  
   var request = gapi.client.bigquery.jobs.query({
     'projectId': "patent-search-224318",
     'timeoutMs': '50000',
