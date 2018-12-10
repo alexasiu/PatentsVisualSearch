@@ -58,7 +58,7 @@ function refreshQuery() {
     if (i!=assignees.length-1) { query += " AND "}
   }
 
-  query += " LIMIT 100;"
+  query += " LIMIT 500;"
   console.log(query);
   var request = gapi.client.bigquery.jobs.query({
     'projectId': "patent-search-224318",
