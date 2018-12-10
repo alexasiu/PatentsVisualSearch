@@ -10,3 +10,5 @@ To query the data, we are using the BigQuery API; since our app isn't verified b
 			pw:    cs448bauthentication
 5. It might give you a warning that the app is not verified. Click Advanced and Continue to website.
 6. The popup will automatically close if it authenticated properly. You should be able to now make a query using the search bar.
+
+Note: If not properly authenticated then an error will print on the Console. 
